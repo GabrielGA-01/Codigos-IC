@@ -88,6 +88,12 @@ def desempenho_modelo(nome_base_de_dados, model, X_test, X_test_justica, y_pred,
     plt.ylabel('Rótulo Verdadeiro (True Label)')
     plt.xlabel('Rótulo Previsto (Predicted Label)')
     plt.show()
+  elif(printar):
+    print(f"\n----- {nome_base_de_dados} || MATRIZ DE CONFUSÃO -----\n")
+    if cm.shape == (2, 2):
+        tn, fp, fn, tp = cm.ravel()
+        print(f"TN: {tn} | FP: {fp}")
+        print(f"FN: {fn} | TP: {tp}")
 
   # Para a variavel sensivel
   filtro_privilegiado = X_test_justica[coluna_sensivel] == grupo_privilegiado
