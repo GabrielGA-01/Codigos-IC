@@ -6,12 +6,15 @@
 
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
+from sklearn import set_config
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from c0_configuracoes import seed
 
 def aplicar_pre_processador(conjunto_dados):
+    set_config(transform_output="pandas")
+
     # PRÉ-PROCESSADORES 
 
     # Dataset 1
@@ -25,7 +28,8 @@ def aplicar_pre_processador(conjunto_dados):
           ('num', StandardScaler(), numerical_cols1),
           ('nom', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), nominal_cols1)
       ],
-      remainder='passthrough'
+      remainder='passthrough',
+      verbose_feature_names_out=False
     )
     colunas1 = numerical_cols1+nominal_cols1
 
@@ -37,7 +41,8 @@ def aplicar_pre_processador(conjunto_dados):
           ('num', StandardScaler(), numerical_cols2),
           ('nom', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), nominal_cols2)
       ],
-      remainder='passthrough'
+      remainder='passthrough',
+      verbose_feature_names_out=False
     )
     colunas2 = numerical_cols2+nominal_cols2
 
@@ -60,7 +65,8 @@ def aplicar_pre_processador(conjunto_dados):
           ('nom', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), nominal_cols3),
           ('ord', OrdinalEncoder(categories=[education_order, income_order, card_order], handle_unknown='use_encoded_value', unknown_value=-1), ordinal_cols3)
       ],
-      remainder='passthrough'
+      remainder='passthrough',
+      verbose_feature_names_out=False
     )
     colunas3 = numerical_cols3+nominal_cols3+ordinal_cols3
 
@@ -89,19 +95,15 @@ def aplicar_pre_processador(conjunto_dados):
     # Verifica se as colunas dos pré-processadores estão presentes no conjunto de dados
     if set(colunas1).issubset(set_colunas_dados):
         preprocessor = preprocessor1
-        num_dataset_identificado = 1
-    
+
     elif set(colunas2).issubset(set_colunas_dados):
         preprocessor = preprocessor2
-        num_dataset_identificado = 2
-        
+
     elif set(colunas3).issubset(set_colunas_dados):
         preprocessor = preprocessor3
-        num_dataset_identificado = 3
         
     elif set(colunas4).issubset(set_colunas_dados):
         preprocessor = preprocessor4
-        num_dataset_identificado = 4
         
     else:
         # Levanta um erro listando as colunas que vieram para ajudar no debug
@@ -110,7 +112,6 @@ def aplicar_pre_processador(conjunto_dados):
             f"Colunas presentes no DataFrame recebido: {list(conjunto_dados.columns)}"
         )
     
-    print(f"Dataset {num_dataset_identificado} identificado. Aplicando preprocessor correspondente.")
     # Separar as features e o rótulo
     X = conjunto_dados.drop('target', axis=1)
     y = conjunto_dados['target']
@@ -138,6 +139,7 @@ if __name__ == "__main__":
     from c1_0_funcoes_analise_Julia import analisar_variavel
 
     df = pd.read_csv(f"{caminho_processado}/Dataset4.csv", sep=',')
+
     X_train, X_test, y_train, y_test = aplicar_pre_processador(df)
 
     df_treino = pd.concat([X_train, y_train], axis=1)
