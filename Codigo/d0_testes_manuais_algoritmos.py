@@ -8,10 +8,10 @@ from c0_configuracoes import (
     dados_sensiveis_age
     )
 from c1_3_preprocessor_automatizado import aplicar_pre_processador
-from c2_3_random_forest import random_forest_GSCV
-from c2_4_xgboost import xgboost_GSCV
-from c2_5_regressao_logistica import regressao_logistica_GSCV
-from c2_6_perceptron import perceptron_GSCV
+from c2_1_random_forest import random_forest_GSCV
+from c2_2_xgboost import xgboost_GSCV
+from c2_3_regressao_logistica import regressao_logistica_GSCV
+from c2_4_perceptron import perceptron_GSCV
 
 import pandas as pd
 
