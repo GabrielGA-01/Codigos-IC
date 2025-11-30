@@ -7,6 +7,7 @@
 # printar - Determina se háverá prints do processo ou não
 
 import pandas as pd
+from sklearn import config_context
 from imblearn.over_sampling import SMOTENC
 import c0_configuracoes as c0_configuracoes
 seed = c0_configuracoes.seed
@@ -51,7 +52,8 @@ def enviesamento_smotenc_rotulo_binario(base_de_dados, colunas_discretas, variav
   smotenc = SMOTENC(sampling_strategy=estrategia, categorical_features=categorical_features_indices, random_state=seed)
 
   # Aplicar o SMOTE
-  X_alterado_resampled, y_alterado_resampled = smotenc.fit_resample(X_alterado, y_alterado)
+  with config_context(transform_output="default"):
+   X_alterado_resampled, y_alterado_resampled = smotenc.fit_resample(X_alterado, y_alterado)
 
   # Reconstruir o DataFrame com os novos dados sintéticos do grupo alterado
   df_alterado_resampled = pd.concat([
