@@ -1,4 +1,4 @@
-# Treina um modelo regressão logística usando pipeline, grid search e cross validation
+# Treina um modelo perceptron usando pipeline, grid search e cross validation
 
 import numpy as np
 import pandas as pd
@@ -7,17 +7,25 @@ from sklearn.model_selection import (
     GridSearchCV,
     StratifiedKFold
 )
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import Perceptron
+from sklearn.calibration import CalibratedClassifierCV
+
 
 from c0_configuracoes import seed
-from c2_1_desempenho_modelos import desempenho_modelo
+from c1_4_desempenho_modelos import desempenho_modelo
 
-def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None):
+def perceptron_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None):
   desempenho = {}
+
+  # Instanciando o modelo
+  base_model = Perceptron()
+
+  # Para obter a probabilidade da previsão
+  calibrated_model = CalibratedClassifierCV(base_model, cv=5, method='sigmoid')
 
   pipeline = Pipeline(steps=[
       ('preprocessor', preprocessor),
-      ('classifier', LogisticRegression())
+      ('classifier', calibrated_model)
   ])
 
   cv_splitter = StratifiedKFold(n_splits=cv_n_splits, shuffle=True, random_state=seed)
@@ -41,12 +49,27 @@ def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de
 
   # Importância das features
 
-  # Extrair componentes do pipeline treinado
-  logistic_model = best_model.named_steps['classifier']
-  preprocessor_fitted = best_model.named_steps['preprocessor']
+  best_params = {key.replace('classifier__estimator__', ''): value
+                 for key, value in grid_search.best_params_.items()}
+
+  # Instanciar um novo Perceptron com os MELHORES parâmetros
+  final_inspection_model = Perceptron(**best_params)
+
+  # Criar um pipeline de inspeção simples
+  inspection_pipeline = Pipeline(steps=[
+      ('preprocessor', preprocessor),
+      ('classifier', final_inspection_model)
+  ])
+
+  # Treinar este pipeline nos dados de treino completos para obter os coeficientes finais
+  inspection_pipeline.fit(X_train, y_train)
+
+  # Agora, extrair os componentes deste pipeline treinado
+  trained_linear_model = inspection_pipeline.named_steps['classifier']
+  preprocessor_fitted = inspection_pipeline.named_steps['preprocessor']
 
   # Extrair coeficientes e nomes das features
-  coefficients = logistic_model.coef_[0]
+  coefficients = trained_linear_model.coef_[0]
   feature_names = preprocessor_fitted.get_feature_names_out()
 
   # Criar e formatar o DataFrame de importância
