@@ -1,0 +1,51 @@
+Instance Reweighing
+- Foi feita a conversão dos dados de treino de dataframe Pandas para o formato AIF360 usando o BinaryLabelDataset, da própria biblioteca AIF360. Para isso foi usado o rótulo favorável e desfavorável, o TARGET e a coluna sexo como atributo protegido.
+- Foi instanciada a técnica de reweighing da AIF360 utilizando os grupos privilegiados e desprivilegiados (dados sensíveis)
+- Foi feito fit e transform do reweighing nos dados de treino
+- Os pesos obtidos foram reconvertidos para o formato dataframe Pandas e usados no processo de fit do grid search de cada um dos algoritmos usados.
+
+Disparate Impact Removal
+- Do mesmo modo e com os mesmos parâmetros do Instace Reweighing foi feita a conversão dos dados de treino do formato dataframe Pandas para binary label dataset AFI360.
+- Para poder utilizar o método de transform, foi preciso fazer uma adaptação ao código do DisparateImpactRemover para adicionar esse método, que não é implementado pela biblioteca originalmente.
+- Foi instanciado a técnica DisparateImpactRemover adaptada com o repair_level=1.0.
+- Foi feito o fit e transform da técnica usando os dados de treino
+- O dataset reparado foi convertido para o formato dataframe Pandas e usado como dados de treino para os algoritmos.
+- Em seguida foi aplicado o transform nos dados de teste para serem usados na avaliação do modelo.
+- Além disso, foi excluída a coluna sexo do conjunto de treinamento e teste do modelo.
+
+Synthetic Data Generation
+- Foi calculada, separadamente para o grupo dos homens e das mulheres, a razão entre número de instâncias com target sendo um com o número de instâncias com target sendo zero.
+- Caso essa razão seja maior para as mulheres, aumenta-se artificialmente o número de mulheres com target zero.
+- Caso essa razão seja maior para os homens, aumenta-se artificialmente o número de mulheres com target um.
+- Em ambos os casos os aumentos visam igualar a razão da classe target para ambos os grupos.
+- Para o aumento foi utilizado o SMOTENC da biblioteca imblearn. Foi passado como parâmetro o número alvo de instâncias, as colunas discretas do dataset e a seed.
+- Foi aplicado o fit_resample do SMOTENC usando as instâncias de mulheres dos dados de treino.
+- Os dados artificiais das mulheres junto com os dados dos homens, que não foram mudados, são juntados novamente e utilizados como treino para os modelos.
+- Os dados de teste não são alterados.
+
+Suppression
+- Foi excluída a coluna sensível do conjunto de dados de treino e teste e em seguida treinado o modelo.
+
+Threshold Optimization
+- Os dados de treino recebidos são divididos em novos dados de treino e dados de validação, 55% e 15% do total do dataset, respectivamente.
+- É treinado o algoritmo usando os novos dados de treinamento validado o desempenho com os dados de teste.
+- É instanciado o threshold optimizer usando o modelo treinado na etapa anterior, prefit=True e como constraints foi utilizado o "demographic_parity".
+- A técnica é treinada nos dados de validação e em seguida usada para prever o target do conjunto de teste. É considerada sexo como coluna sensível.
+
+Calibration
+- Os dados foram separados do mesmo modo que o Threshold Optimization e treinado o modelo. Somente os dados de validação que foram chamados de calibração nesse caso.
+- As instâncias de calibração foram separadas de acordo com o sexo e instanciado um calibrador Isotonic Regression so Scikit Learn usando out_of_bounds='clip'.
+- Cada calibrador foi treinado com os dados de calibração do respectivo sexo e aplicado com a probabilidade da previsão do modelo para o conjunto de teste para instâncias do mesmo sexo.
+
+Reject Option Classification
+- Foi feita a mesma separação de dados dos anteriores.
+- Após o modelo ser treinado com os dados de treino, ele foi usado para determinar a probabilidade de previsão do rótulo favorável e o rótulo em si para o conjunto de validação.
+- Foi criado um novo conjunto de dados contendo as features de validação e o rótulo previsto pelo modelo. Esse novo conjunto e o conjunto de validação foram convertido para o formato binary label dataset.
+- Para o parâmetro scores do dataset com os dados previstos é passado as probabilidades da previsão do rótulo favorável.
+- Foi instanciado o reject option classsification da biblioteca AIF360 usando os grupos privilegiados, desprivilegiados, a margem inferior de incerteza como 0.45 e a superior como 0.55.
+- A técnica foi treinada usando o conjunto de validação com o rótulo real e o conjunto de validação com as previsões do modelo.
+- O mesmo processo de criar os conjuntos foi feito para os dados de teste, porém ao invés de treinar foi usado o predict do reject option classification
+
+
+
+Como o algoritmo do percetron não é capaz de fornecer a probabilidade da sua previsão, durante o treinamento do modelo foi utilizado o CalibratedClassifierCV do Scikit Learn usando cv=5 e method='sigmoid'
