@@ -92,11 +92,12 @@ def enviesar():
             dados_sensiveis = variaveis_sensiveis[varsen]['dados_sensiveis']
 
             df_novo = {
-            'nome_banco': novo_nome_banco,         
-            'treino': novos_dados_treino,
-            'teste': novos_dados_teste,
-            'colunas_discretas': novas_colunas_discretas, 
-            'dados_sensiveis': dados_sensiveis,
+                'nome_banco': novo_nome_banco,         
+                'treino': novos_dados_treino,
+                'teste': novos_dados_teste,
+                'colunas_discretas': novas_colunas_discretas, 
+                'dados_sensiveis': dados_sensiveis,
+                'smote': 'original'
             }
 
             datasets[df][f'original_' + varsen] = df_novo
@@ -119,7 +120,8 @@ def enviesar():
                     'treino': df_enviesado_treino,
                     'teste': novos_dados_teste,
                     'colunas_discretas': novas_colunas_discretas,
-                    'dados_sensiveis': dados_sensiveis
+                    'dados_sensiveis': dados_sensiveis,
+                    'smote': tipo
                 }
 
                 datasets[df][f'{tipo}_' + varsen] = df_enviesado
