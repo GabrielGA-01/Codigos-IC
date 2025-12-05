@@ -52,7 +52,7 @@ def instance_reweighing(funcao_modelo, parametros_in, printar=False):
     return(desempenho)
 
 if __name__ == "__main__":
-    from c0_configuracoes import (
+    from c0_1_configuracoes import (
         param_grid_xgboost_basico,
         preprocessor_passthrough,
         dados_sensiveis_sexo

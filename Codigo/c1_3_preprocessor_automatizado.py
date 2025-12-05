@@ -10,7 +10,7 @@ from sklearn import set_config
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 
 def aplicar_pre_processador(conjunto_dados):
     set_config(transform_output="pandas")
@@ -135,7 +135,7 @@ def aplicar_pre_processador(conjunto_dados):
 
 # Exemplo de uso
 if __name__ == "__main__":
-    from c0_configuracoes import caminho_processado
+    from c0_1_configuracoes import caminho_processado
     from c1_0_funcoes_analise_Julia import analisar_variavel
 
     df = pd.read_csv(f"{caminho_processado}/Dataset4.csv", sep=',')

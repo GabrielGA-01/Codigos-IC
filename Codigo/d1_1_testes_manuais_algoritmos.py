@@ -1,4 +1,4 @@
-from c0_configuracoes import (
+from c0_1_configuracoes import (
     param_grid_regressao_logistica_completo, 
     param_grid_perceptron_completo, 
     param_grid_random_forest_completo, 

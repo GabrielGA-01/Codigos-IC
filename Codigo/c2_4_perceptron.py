@@ -11,7 +11,7 @@ from sklearn.linear_model import Perceptron
 from sklearn.calibration import CalibratedClassifierCV
 
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 def perceptron_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None):

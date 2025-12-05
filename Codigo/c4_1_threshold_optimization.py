@@ -1,7 +1,7 @@
 from fairlearn.postprocessing import ThresholdOptimizer
 from sklearn.model_selection import train_test_split
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 
@@ -60,7 +60,7 @@ def threshold_optimization(funcao_modelo, parametros_in, printar=False):
 if __name__ == "__main__":
     import pandas as pd
 
-    from c0_configuracoes import (
+    from c0_1_configuracoes import (
         param_grid_xgboost_basico,
         preprocessor_passthrough,
         dados_sensiveis_age

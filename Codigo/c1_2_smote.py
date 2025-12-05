@@ -9,8 +9,8 @@
 import pandas as pd
 from sklearn import config_context
 from imblearn.over_sampling import SMOTENC
-import c0_configuracoes as c0_configuracoes
-seed = c0_configuracoes.seed
+import c0_1_configuracoes as c0_1_configuracoes
+seed = c0_1_configuracoes.seed
 
 def enviesamento_smotenc_rotulo_binario(base_de_dados, colunas_discretas, variavel_sensivel, classe_alterada, classe_intacta, printar=False):
   df_alterado = base_de_dados[base_de_dados[variavel_sensivel] == classe_alterada].copy()
@@ -86,7 +86,7 @@ def enviesamento_smotenc_rotulo_binario(base_de_dados, colunas_discretas, variav
 # Exemplo de uso
 if __name__ == "__main__":
   from sklearn.model_selection import train_test_split
-  from c0_configuracoes import caminho_processado
+  from c0_1_configuracoes import caminho_processado
 
   colunas_discretas1 = [
       'IS_MARRIAGED', 'EDUCATION', 'PAY_1', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6'

@@ -8,7 +8,7 @@ from sklearn.model_selection import (
 )
 import xgboost as xgb
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 from c1_5_grafico_shap_violino import fazer_grafico_shap
 

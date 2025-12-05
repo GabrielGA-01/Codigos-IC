@@ -2,7 +2,7 @@ import pandas as pd
 from imblearn.over_sampling import SMOTENC
 from sklearn import config_context 
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 from c1_1_balancear import balancear_proporcao_rotulo_binario as balancear
 
 def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, printar=False):
@@ -107,7 +107,7 @@ def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, p
     return(desempenho)
 
 if __name__ == "__main__":
-    from c0_configuracoes import (
+    from c0_1_configuracoes import (
         param_grid_perceptron_basico,
         preprocessor_passthrough,
         dados_sensiveis_age,

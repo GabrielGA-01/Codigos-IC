@@ -2,7 +2,7 @@ from sklearn.isotonic import IsotonicRegression
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
-from c0_configuracoes import seed
+from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 def calibration(funcao_modelo, parametros_in, printar=False):
@@ -79,7 +79,7 @@ def calibration(funcao_modelo, parametros_in, printar=False):
     return(desempenho_base, desempenho_calibration)
 
 if __name__ == "__main__":
-    from c0_configuracoes import (
+    from c0_1_configuracoes import (
         param_grid_xgboost_basico,
         preprocessor_passthrough,
         dados_sensiveis_age

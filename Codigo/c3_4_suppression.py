@@ -28,7 +28,7 @@ def suppression(funcao_modelo, parametros_in, printar=False):
 if __name__ == "__main__":
     import pandas as pd
 
-    from c0_configuracoes import (
+    from c0_1_configuracoes import (
         param_grid_regressao_logistica_basico,
         preprocessor_passthrough,
         dados_sensiveis_sexo

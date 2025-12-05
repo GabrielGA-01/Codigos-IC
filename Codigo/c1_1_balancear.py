@@ -83,7 +83,7 @@ def balancear_proporcao_rotulo_binario(conjunto_dados, cojunto_nome, rotulo, pri
 # Exemplo de uso
 if __name__ == "__main__":
   import pandas as pd
-  from c0_configuracoes import caminho_processado
+  from c0_1_configuracoes import caminho_processado
 
   df = pd.read_csv(f"{caminho_processado}/Dataset1.csv", sep=',')
   df_original_balanceado, estatisticas = balancear_proporcao_rotulo_binario(df, "dataset1", "target", printar=True)
