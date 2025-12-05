@@ -1,35 +1,3 @@
-# Função auxiliar para calcular as taxas de verdadeiro/falso positivo/negativo
-
-def metricas_matriz_de_confusao(cm):
-    tn, fp, fn, tp = cm.ravel()
-
-    total = tn + fp + fn + tp
-
-    tpr = tp / (tp + fn) if (tp + fn) > 0 else 0
-    tnr = tn / (tn + fp) if (tn + fp) > 0 else 0
-    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
-    fnr = fn / (fn + tp) if (fn + tp) > 0 else 0
-    selection_rate = (tp + fp) / total if total > 0 else 0
-
-    return {
-        "matriz_de_confusao": cm.tolist(),
-        "true_positive_rate": tpr,
-        "true_negative_rate": tnr,
-        "false_positive_rate": fpr,
-        "false_negative_rate": fnr,
-        "selection_rate": selection_rate
-    }
-
-# Função responsável por calcular o desempenho de todos os modelos
-# nome_base_de_dados - Nome do conjunto de dados usado nos prints
-# model - Modelo já treinado previamente
-# X_test - As features do conjunto de teste
-# X_test_justica - A coluna com os dados sensíveis
-# y_pred - As previsões feitas pelo modelo no conjunto de teste
-# y_test - Os valores reais dos rótulos do conjunto de teste
-# dados_sensiveis - Um dicionário contendo o nome da coluna sensível e o grupo privilegiado e desprivilegiado
-# matriz_de_confusao - Determina se será feito e exibido um gráfico com a matriz de confusão
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -39,235 +7,259 @@ from sklearn.metrics import (
     confusion_matrix,
     roc_auc_score,
     f1_score
-    )
+)
 
 def desempenho_modelo(nome_base_de_dados, model, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False):
-  coluna_sensivel = dados_sensiveis['coluna_sensivel']
-  grupo_privilegiado = dados_sensiveis['grupo_privilegiado']
-  grupo_desprivilegiado = dados_sensiveis['grupo_desprivilegiado']
+    coluna_sensivel = dados_sensiveis['coluna_sensivel']
+    grupo_privilegiado = dados_sensiveis['grupo_privilegiado']
+    grupo_desprivilegiado = dados_sensiveis['grupo_desprivilegiado']
 
-  desempenho = {}
+    # Para os resultados
+    desempenho_geral = {}
+    desempenho_privilegiado = {}
+    desempenho_desprivilegiado = {}
 
-  # Relatório de classificação
-  if(printar):
-    print(f"\n----- {nome_base_de_dados} || RELATÓRIO DE CLASSIFICAÇÃO -----\n")
-    print(classification_report(y_test, y_pred, zero_division=0))
-  desempenho["relatorio_classificacao"] = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
+    # Separando os grupos
+    filtro_privilegiado = X_test_justica[coluna_sensivel] == grupo_privilegiado
+    y_test_priv = y_test[filtro_privilegiado]
+    y_pred_priv = y_pred[filtro_privilegiado]
+    X_test_priv = X_test[filtro_privilegiado]
 
-  # Cálculo da AUC
-  y_pred_proba = model.predict_proba(X_test)[:, 1]
-  auc = roc_auc_score(y_test, y_pred_proba)
-  desempenho['ROC_AUC'] = auc
-  if(printar):
-    print(f"ROC AUC: {auc:.4f}")
+    filtro_desprivilegiado = X_test_justica[coluna_sensivel] == grupo_desprivilegiado
+    y_test_despriv = y_test[filtro_desprivilegiado]
+    y_pred_despriv = y_pred[filtro_desprivilegiado]
+    X_test_despriv = X_test[filtro_desprivilegiado]
 
-  # Cálculo do F1 Score
-  f1 = f1_score(y_test, y_pred, zero_division=0)
-  desempenho['F1_Score'] = f1
-  if(printar):
-    print(f"F1 Score: {f1:.4f}")
+    # RELATÓRIO DE CLASSIFICAÇÃO
+    desempenho_geral['relatorio_classificacao'] = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
+    desempenho_privilegiado['relatorio_classificacao'] = classification_report(y_test_priv, y_pred_priv, output_dict=True, zero_division=0)
+    desempenho_desprivilegiado['relatorio_classificacao'] = classification_report(y_test_despriv, y_pred_despriv, output_dict=True, zero_division=0)
 
-  # Cálculo do KS
-  proba_1 = y_pred_proba[y_test == 1]
-  proba_0 = y_pred_proba[y_test == 0]
-  ks = ks_2samp(proba_1, proba_0).statistic
-  desempenho['KS'] = ks
-  if(printar):
-    print(f"KS: {ks:.4f}")
+    if printar:
+        print(f'\n----- {nome_base_de_dados} || RELATÓRIO DE CLASSIFICAÇÃO -----\n')
+        print(classification_report(y_test, y_pred, zero_division=0))
 
-  # Matriz de Confusão
-  cm = confusion_matrix(y_test, y_pred)
-  desempenho["matriz_de_confusao"] = cm.tolist()
-  if(matriz_de_confusao):
-    print(f"\n----- {nome_base_de_dados} || MATRIZ DE CONFUSÃO -----\n")
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['0', '1'],
-                yticklabels=['0', '1'])
-    plt.title('Matriz de Confusão')
-    plt.ylabel('Rótulo Verdadeiro (True Label)')
-    plt.xlabel('Rótulo Previsto (Predicted Label)')
-    plt.show()
-  elif(printar):
-    print(f"\n----- {nome_base_de_dados} || MATRIZ DE CONFUSÃO -----\n")
-    if cm.shape == (2, 2):
-        tn, fp, fn, tp = cm.ravel()
-        print(f"TN: {tn} | FP: {fp}")
-        print(f"FN: {fn} | TP: {tp}")
+    # CÁLCULO DA AUC
+    y_pred_proba_geral = model.predict_proba(X_test)[:, 1]
+    y_pred_proba_priv = model.predict_proba(X_test_priv)[:, 1]
+    y_pred_proba_despriv = model.predict_proba(X_test_despriv)[:, 1]
 
-  # Para a variavel sensivel
-  filtro_privilegiado = X_test_justica[coluna_sensivel] == grupo_privilegiado
-  y_test_priv = y_test[filtro_privilegiado]
-  y_pred_priv = y_pred[filtro_privilegiado]
-  cm_priv = confusion_matrix(y_test_priv, y_pred_priv)
-  desempenho[f'{coluna_sensivel}_privilegiado'] = metricas_matriz_de_confusao(cm_priv)
+    try:
+        desempenho_geral['ROC_AUC'] = roc_auc_score(y_test, y_pred_proba_geral)
+    except ValueError:
+        desempenho_geral['ROC_AUC'] = 0.0
+    
+    try:
+        desempenho_privilegiado['ROC_AUC'] = roc_auc_score(y_test_priv, y_pred_proba_priv)
+    except ValueError:
+         desempenho_privilegiado['ROC_AUC'] = 0.0
+    
+    try:
+        desempenho_desprivilegiado['ROC_AUC'] = roc_auc_score(y_test_despriv, y_pred_proba_despriv)
+    except ValueError:
+        desempenho_desprivilegiado['ROC_AUC'] = 0.0
 
-  filtro_desprivilegiado = X_test_justica[coluna_sensivel] == grupo_desprivilegiado
-  y_test_despriv = y_test[filtro_desprivilegiado]
-  y_pred_despriv = y_pred[filtro_desprivilegiado]
-  cm_despriv = confusion_matrix(y_test_despriv, y_pred_despriv)
-  desempenho[f'{coluna_sensivel}_desprivilegiado'] = metricas_matriz_de_confusao(cm_despriv)
+    if printar:
+        print(f"ROC AUC: {desempenho_geral['ROC_AUC']:.4f}")
 
-  # Verificando a justiça do modelo
-  if(printar):
-    print(f"\n----- {nome_base_de_dados} || JUSTIÇA DO MODELO -----\n")
+    # CÁLCULO DO F1 SCORE
+    desempenho_geral['F1_Score'] = f1_score(y_test, y_pred, zero_division=0)
+    desempenho_privilegiado['F1_Score'] = f1_score(y_test_priv, y_pred_priv, zero_division=0)
+    desempenho_desprivilegiado['F1_Score'] = f1_score(y_test_despriv, y_pred_despriv, zero_division=0)
 
-  df_results = pd.DataFrame({
-    'Y_real': y_test,
-    'Y_predito': y_pred,
-    coluna_sensivel: X_test_justica[coluna_sensivel]
-  })
+    if printar:
+        print(f"F1 Score: {desempenho_geral['F1_Score']:.4f}")
 
-  # Separando os grupos
-  group_desprivilegiado = (df_results[coluna_sensivel] == grupo_desprivilegiado)
-  group_privilegiado = (df_results[coluna_sensivel] == grupo_privilegiado)
+    # Função interna para evitar que o código falhe se um grupo não tiver as duas classes
+    def calcular_ks_seguro(y_true, y_proba):
+        proba_1 = y_proba[y_true == 1]
+        proba_0 = y_proba[y_true == 0]
+        
+        # Só calcula se existirem exemplos de ambas as classes
+        if len(proba_1) > 0 and len(proba_0) > 0:
+            return ks_2samp(proba_1, proba_0).statistic
+        return 0.0
 
-  # Métrica 1 - Demographic Parity (Selection Rate) - (Paridade estatística)
-  selection_rate_desprivilegiado = df_results[group_desprivilegiado]['Y_predito'].mean()
-  selection_rate_privilegiado = df_results[group_privilegiado]['Y_predito'].mean()
+    desempenho_geral['KS'] = calcular_ks_seguro(y_test, y_pred_proba_geral)
+    desempenho_privilegiado['KS'] = calcular_ks_seguro(y_test_priv, y_pred_proba_priv)
+    desempenho_desprivilegiado['KS'] = calcular_ks_seguro(y_test_despriv, y_pred_proba_despriv)
 
-  demographic_parity_difference = selection_rate_desprivilegiado - selection_rate_privilegiado
+    if printar:
+        print(f"KS: {desempenho_geral['KS']:.4f}")
 
-  if selection_rate_privilegiado > 0:
-      demographic_parity_ratio = selection_rate_desprivilegiado / selection_rate_privilegiado
-  else:
-      demographic_parity_ratio = float('inf')
+    # Matriz de Confusão
+    cm = confusion_matrix(y_test, y_pred)
+    desempenho_geral['matriz_de_confusao'] = cm.tolist()
+    desempenho_privilegiado['matriz_de_confusao'] = confusion_matrix(y_test_priv, y_pred_priv).tolist()
+    desempenho_desprivilegiado['matriz_de_confusao'] = confusion_matrix(y_test_despriv, y_pred_despriv).tolist()
 
-  if(printar):
-      print("----- Demographic Parity (Selection Rate) -----")
-      print(f"Selection Rate (Desprivilegiado): {selection_rate_desprivilegiado:.4f}")
-      print(f"Selection Rate (Privilegiado):   {selection_rate_privilegiado:.4f}")
-      print(f"Demographic Parity Difference: {demographic_parity_difference:.4f}")
-      print(f"Demographic Parity Ratio:    {demographic_parity_ratio:.4f}\n")
+    if matriz_de_confusao:
+        print(f'\n----- {nome_base_de_dados} || MATRIZ DE CONFUSÃO -----\n')
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=['0', '1'],
+                    yticklabels=['0', '1'])
+        plt.title('Matriz de Confusão')
+        plt.show()
+    elif printar:
+        print(f'\n----- {nome_base_de_dados} || MATRIZ DE CONFUSÃO -----\n')
+        if cm.shape == (2, 2):
+            tn, fp, fn, tp = cm.ravel()
+            print(f'TN: {tn} | FP: {fp}')
+            print(f'FN: {fn} | TP: {tp}')
 
-  desempenho["demographic_parity"] = {
-      "selection_rate_privilegiado": selection_rate_privilegiado,
-      "selection_rate_desprivilegiado": selection_rate_desprivilegiado,
-      "demographic_parity_difference": demographic_parity_difference,
-      "demographic_parity_ratio": demographic_parity_ratio
-  }
+    # Verificando a justiça do modelo
+    if printar:
+        print(f'\n----- {nome_base_de_dados} || JUSTIÇA DO MODELO -----\n')
 
-  # Metrica 2 - True Positive Rate - (Equal Opportunity)
-  positives_real = df_results[df_results['Y_real'] == 1]
-  tpr_desprivilegiado = positives_real[positives_real[coluna_sensivel] == grupo_desprivilegiado]['Y_predito'].mean()
-  tpr_privilegiado = positives_real[positives_real[coluna_sensivel] == grupo_privilegiado]['Y_predito'].mean()
+    df_results = pd.DataFrame({
+        'Y_real': y_test,
+        'Y_predito': y_pred,
+        coluna_sensivel: X_test_justica[coluna_sensivel]
+    })
 
-  true_positive_rate_difference = tpr_desprivilegiado - tpr_privilegiado
+    # Separando os grupos
+    group_desprivilegiado = (df_results[coluna_sensivel] == grupo_desprivilegiado)
+    group_privilegiado = (df_results[coluna_sensivel] == grupo_privilegiado)
 
-  if tpr_privilegiado > 0:
-      true_positive_rate_ratio = tpr_desprivilegiado / tpr_privilegiado
-  else:
-      true_positive_rate_ratio = float('inf')
+    # Métrica 1 - Demographic Parity
+    selection_rate_desprivilegiado = df_results[group_desprivilegiado]['Y_predito'].mean()
+    selection_rate_privilegiado = df_results[group_privilegiado]['Y_predito'].mean()
 
-  if(printar):
-      print("----- True Positive Rate (Equal Opportunity) -----")
-      print(f"True Positive Rate (Desprivilegiado): {tpr_desprivilegiado:.4f}")
-      print(f"True Positive Rate (Privilegiado):   {tpr_privilegiado:.4f}")
-      print(f"True Positive Rate Difference: {true_positive_rate_difference:.4f}")
-      print(f"True Positive Rate Ratio:      {true_positive_rate_ratio:.4f}\n")
+    if pd.isna(selection_rate_desprivilegiado): selection_rate_desprivilegiado = 0.0
+    if pd.isna(selection_rate_privilegiado): selection_rate_privilegiado = 0.0
 
-  desempenho["true_positive_rate"] = {
-      "true_positive_rate_privilegiado": tpr_privilegiado,
-      "true_positive_rate_desprivilegiado": tpr_desprivilegiado,
-      "true_positive_rate_difference": true_positive_rate_difference,
-      "true_positive_rate_ratio": true_positive_rate_ratio
-  }
+    demographic_parity_difference = selection_rate_desprivilegiado - selection_rate_privilegiado
+    demographic_parity_ratio = (selection_rate_desprivilegiado / selection_rate_privilegiado) if selection_rate_privilegiado > 0 else float('inf')
 
-  # Metrica 3 - False Positive Rate
-  negatives_real = df_results[df_results['Y_real'] == 0]
-  fpr_desprivilegiado = negatives_real[negatives_real[coluna_sensivel] == grupo_desprivilegiado]['Y_predito'].mean()
-  fpr_privilegiado = negatives_real[negatives_real[coluna_sensivel] == grupo_privilegiado]['Y_predito'].mean()
+    if printar:
+        print('----- Demographic Parity (Selection Rate) -----')
+        print(f'Selection Rate (Desprivilegiado): {selection_rate_desprivilegiado:.4f}')
+        print(f'Selection Rate (Privilegiado):   {selection_rate_privilegiado:.4f}')
+        print(f'Demographic Parity Difference: {demographic_parity_difference:.4f}')
+        print(f'Demographic Parity Ratio:    {demographic_parity_ratio:.4f}\n')
 
-  fpr_difference = fpr_desprivilegiado - fpr_privilegiado
+    desempenho_geral['demographic_parity'] = {
+        'selection_rate_privilegiado': selection_rate_privilegiado,
+        'selection_rate_desprivilegiado': selection_rate_desprivilegiado,
+        'demographic_parity_difference': demographic_parity_difference,
+        'demographic_parity_ratio': demographic_parity_ratio
+    }
 
-  if fpr_privilegiado > 0:
-      fpr_ratio = fpr_desprivilegiado / fpr_privilegiado
-  else:
-      fpr_ratio = float('inf')
+    # Metrica 2 - True Positive Rate (Equal Opportunity)
+    positives_real = df_results[df_results['Y_real'] == 1]
+    tpr_desprivilegiado = positives_real[positives_real[coluna_sensivel] == grupo_desprivilegiado]['Y_predito'].mean()
+    tpr_privilegiado = positives_real[positives_real[coluna_sensivel] == grupo_privilegiado]['Y_predito'].mean()
 
-  if(printar):
-      print("----- False Positive Rate -----")
-      print(f"False Positive Rate (Desprivilegiado): {fpr_desprivilegiado:.4f}")
-      print(f"False Positive Rate (Privilegiado):   {fpr_privilegiado:.4f}")
-      print(f"False Positive Rate Difference: {fpr_difference:.4f}")
-      print(f"False Positive Rate Ratio:      {fpr_ratio:.4f}\n")
+    if pd.isna(tpr_desprivilegiado): tpr_desprivilegiado = 0.0
+    if pd.isna(tpr_privilegiado): tpr_privilegiado = 0.0
 
-  desempenho["false_positive_rate"] = {
-      "false_positive_rate_privilegiado": fpr_privilegiado,
-      "false_positive_rate_desprivilegiado": fpr_desprivilegiado,
-      "false_positive_rate_difference": fpr_difference,
-      "false_positive_rate_ratio": fpr_ratio
-  }
+    true_positive_rate_difference = tpr_desprivilegiado - tpr_privilegiado
+    true_positive_rate_ratio = (tpr_desprivilegiado / tpr_privilegiado) if tpr_privilegiado > 0 else float('inf')
 
-  # Metrica 4 - False Negative Rate
-  fnr_desprivilegiado = 1 - tpr_desprivilegiado
-  fnr_privilegiado = 1 - tpr_privilegiado
+    if printar:
+        print('----- True Positive Rate (Equal Opportunity) -----')
+        print(f'TPR (Desprivilegiado): {tpr_desprivilegiado:.4f}')
+        print(f'TPR (Privilegiado):   {tpr_privilegiado:.4f}')
+        print(f'Diff: {true_positive_rate_difference:.4f} | Ratio: {true_positive_rate_ratio:.4f}\n')
 
-  fnr_difference = fnr_desprivilegiado - fnr_privilegiado
+    desempenho_geral['true_positive_rate'] = {
+        'true_positive_rate_privilegiado': tpr_privilegiado,
+        'true_positive_rate_desprivilegiado': tpr_desprivilegiado,
+        'true_positive_rate_difference': true_positive_rate_difference,
+        'true_positive_rate_ratio': true_positive_rate_ratio
+    }
 
-  if fnr_privilegiado > 0:
-      fnr_ratio = fnr_desprivilegiado / fnr_privilegiado
-  else:
-      fnr_ratio = float('inf')
+    # Metrica 3 - False Positive Rate
+    negatives_real = df_results[df_results['Y_real'] == 0]
+    fpr_desprivilegiado = negatives_real[negatives_real[coluna_sensivel] == grupo_desprivilegiado]['Y_predito'].mean()
+    fpr_privilegiado = negatives_real[negatives_real[coluna_sensivel] == grupo_privilegiado]['Y_predito'].mean()
 
-  if(printar):
-      print("----- False Negative Rate -----")
-      print(f"False Negative Rate (Desprivilegiado): {fnr_desprivilegiado:.4f}")
-      print(f"False Negative Rate (Privilegiado):   {fnr_privilegiado:.4f}")
-      print(f"False Negative Rate Difference: {fnr_difference:.4f}")
-      print(f"False Negative Rate Ratio:      {fnr_ratio:.4f}\n")
+    if pd.isna(fpr_desprivilegiado): fpr_desprivilegiado = 0.0
+    if pd.isna(fpr_privilegiado): fpr_privilegiado = 0.0
 
-  desempenho["false_negative_rate"] = {
-      "false_negative_rate_privilegiado": fnr_privilegiado,
-      "false_negative_rate_desprivilegiado": fnr_desprivilegiado,
-      "false_negative_rate_difference": fnr_difference,
-      "false_negative_rate_ratio": fnr_ratio
-  }
+    fpr_difference = fpr_desprivilegiado - fpr_privilegiado
+    fpr_ratio = (fpr_desprivilegiado / fpr_privilegiado) if fpr_privilegiado > 0 else float('inf')
 
-  # Metrica 5 - Predictive Parity (Precision)
-  positives_predicted = df_results[df_results['Y_predito'] == 1]
-  precision_desprivilegiado = positives_predicted[positives_predicted[coluna_sensivel] == grupo_desprivilegiado]['Y_real'].mean()
-  precision_privilegiado = positives_predicted[positives_predicted[coluna_sensivel] == grupo_privilegiado]['Y_real'].mean()
+    if printar:
+        print('----- False Positive Rate -----')
+        print(f'FPR (Desprivilegiado): {fpr_desprivilegiado:.4f}')
+        print(f'FPR (Privilegiado):   {fpr_privilegiado:.4f}')
+        print(f'Diff: {fpr_difference:.4f} | Ratio: {fpr_ratio:.4f}\n')
 
-  predictive_parity_difference = precision_desprivilegiado - precision_privilegiado
+    desempenho_geral['false_positive_rate'] = {
+        'false_positive_rate_privilegiado': fpr_privilegiado,
+        'false_positive_rate_desprivilegiado': fpr_desprivilegiado,
+        'false_positive_rate_difference': fpr_difference,
+        'false_positive_rate_ratio': fpr_ratio
+    }
 
-  if precision_privilegiado > 0:
-      predictive_parity_ratio = precision_desprivilegiado / precision_privilegiado
-  else:
-      predictive_parity_ratio = float('inf')
+    # Metrica 4 - False Negative Rate
+    fnr_desprivilegiado = 1 - tpr_desprivilegiado
+    fnr_privilegiado = 1 - tpr_privilegiado
 
-  if(printar):
-      print("----- Predictive Parity (Precision) -----")
-      print(f"Precision (Desprivilegiado): {precision_desprivilegiado:.4f}")
-      print(f"Precision (Privilegiado):   {precision_privilegiado:.4f}")
-      print(f"Predictive Parity Difference: {predictive_parity_difference:.4f}")
-      print(f"Predictive Parity Ratio:      {predictive_parity_ratio:.4f}\n")
+    fnr_difference = fnr_desprivilegiado - fnr_privilegiado
+    fnr_ratio = (fnr_desprivilegiado / fnr_privilegiado) if fnr_privilegiado > 0 else float('inf')
 
-  desempenho["predictive_parity"] = {
-      "precision_privilegiado": precision_privilegiado,
-      "precision_desprivilegiado": precision_desprivilegiado,
-      "predictive_parity_difference": predictive_parity_difference,
-      "predictive_parity_ratio": predictive_parity_ratio
-  }
+    if printar:
+        print('----- False Negative Rate -----')
+        print(f'FNR Diff: {fnr_difference:.4f} | Ratio: {fnr_ratio:.4f}\n')
 
-  # Metrica 6 - Equalized Odds
-  equalized_odds_difference = max(abs(tpr_desprivilegiado - tpr_privilegiado), abs(fpr_desprivilegiado - fpr_privilegiado))
+    desempenho_geral['false_negative_rate'] = {
+        'false_negative_rate_privilegiado': fnr_privilegiado,
+        'false_negative_rate_desprivilegiado': fnr_desprivilegiado,
+        'false_negative_rate_difference': fnr_difference,
+        'false_negative_rate_ratio': fnr_ratio
+    }
 
-  if tpr_privilegiado > 0 and fpr_privilegiado > 0:
-      tpr_r = tpr_desprivilegiado / tpr_privilegiado
-      fpr_r = fpr_desprivilegiado / fpr_privilegiado
-      equalized_odds_ratio = min(tpr_r, fpr_r)
-  else:
-      equalized_odds_ratio = 0
+    # Metrica 5 - Predictive Parity (Precision)
+    positives_predicted = df_results[df_results['Y_predito'] == 1]
+    precision_desprivilegiado = positives_predicted[positives_predicted[coluna_sensivel] == grupo_desprivilegiado]['Y_real'].mean()
+    precision_privilegiado = positives_predicted[positives_predicted[coluna_sensivel] == grupo_privilegiado]['Y_real'].mean()
 
-  if(printar):
-      print("----- Equalized Odds -----")
-      print(f"Equalized Odds Difference (max of TPR/FPR diffs): {equalized_odds_difference:.4f}")
-      print(f"Equalized Odds Ratio (min of TPR/FPR ratios):    {equalized_odds_ratio:.4f}\n")
+    # Caso não haja nenhuma previsão positiva
+    if pd.isna(precision_desprivilegiado): precision_desprivilegiado = 0.0
+    if pd.isna(precision_privilegiado): precision_privilegiado = 0.0
 
-  desempenho["equalized_odds"] = {
-      "equalized_odds_difference": equalized_odds_difference,
-      "equalized_odds_ratio": equalized_odds_ratio,
-  }
+    predictive_parity_difference = precision_desprivilegiado - precision_privilegiado
+    predictive_parity_ratio = (precision_desprivilegiado / precision_privilegiado) if precision_privilegiado > 0 else float('inf')
 
-  return(desempenho)
+    if printar:
+        print('----- Predictive Parity (Precision) -----')
+        print(f'Precision (Desprivilegiado): {precision_desprivilegiado:.4f}')
+        print(f'Precision (Privilegiado):   {precision_privilegiado:.4f}')
+        print(f'Diff: {predictive_parity_difference:.4f} | Ratio: {predictive_parity_ratio:.4f}\n')
+
+    desempenho_geral['predictive_parity'] = {
+        'precision_privilegiado': precision_privilegiado,
+        'precision_desprivilegiado': precision_desprivilegiado,
+        'predictive_parity_difference': predictive_parity_difference,
+        'predictive_parity_ratio': predictive_parity_ratio
+    }
+
+    # Metrica 6 - Equalized Odds
+    equalized_odds_difference = max(abs(tpr_desprivilegiado - tpr_privilegiado), abs(fpr_desprivilegiado - fpr_privilegiado))
+
+    if tpr_privilegiado > 0 and fpr_privilegiado > 0:
+        tpr_r = tpr_desprivilegiado / tpr_privilegiado
+        fpr_r = fpr_desprivilegiado / fpr_privilegiado
+        equalized_odds_ratio = min(tpr_r, fpr_r)
+    else:
+        equalized_odds_ratio = 0.0
+
+    if printar:
+        print('----- Equalized Odds -----')
+        print(f'Diff: {equalized_odds_difference:.4f}')
+        print(f'Ratio: {equalized_odds_ratio:.4f}\n')
+
+    desempenho_geral['equalized_odds'] = {
+        'equalized_odds_difference': equalized_odds_difference,
+        'equalized_odds_ratio': equalized_odds_ratio,
+    }
+
+    desempenho = {}
+    desempenho['geral'] = desempenho_geral
+    desempenho['privilegiado'] = desempenho_privilegiado
+    desempenho['desprivilegiado'] = desempenho_desprivilegiado
+
+    return desempenho
