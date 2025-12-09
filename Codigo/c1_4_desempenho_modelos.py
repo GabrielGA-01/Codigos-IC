@@ -70,6 +70,8 @@ def desempenho_modelo(nome_base_de_dados, model, X_test, X_test_justica, y_pred,
     if printar:
         print(f"F1 Score: {desempenho_geral['F1_Score']:.4f}")
 
+
+    # CÁLCULO KS
     # Função interna para evitar que o código falhe se um grupo não tiver as duas classes
     def calcular_ks_seguro(y_true, y_proba):
         proba_1 = y_proba[y_true == 1]
