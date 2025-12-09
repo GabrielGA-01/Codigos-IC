@@ -79,7 +79,7 @@ def gerar_planilha(dados, caminho_resultado):
         smote_valor = resto_dataset.get('smote', 'Original (Inferido)') 
         
         # Extração de metadados
-        dataset_base = label_dataset.split('_com_sensitive')[0].replace('_', '') 
+        dataset_base = label_dataset
         feature_sensivel_base = 'sexo' if 'sexo' in label_dataset.lower() else 'age'
         
         modelos = {k: v for k, v in resto_dataset.items() if k != 'smote'}
