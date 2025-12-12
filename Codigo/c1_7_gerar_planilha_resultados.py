@@ -267,7 +267,7 @@ def gerar_planilha(dados, caminho_resultado):
 
 
     # --- Salvar os DataFrames em um único arquivo Excel ---
-    nome_arquivo = f'{caminho_resultado}/resultado_global_{time.strftime("%d_%m_%Y_%H", time.localtime())}.xlsx'
+    nome_arquivo = f'{caminho_resultado}/resultado_global_{time.strftime("%d_%m_%Y_%H_%M", time.localtime())}.xlsx'
 
     try:
         with pd.ExcelWriter(nome_arquivo, engine='openpyxl') as writer:
