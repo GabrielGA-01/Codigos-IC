@@ -1,6 +1,23 @@
+import joblib
 import pandas as pd
+import os
 import time
 import re
+
+def salvar_dicionario(resultado, caminho_resultado, sucesso):
+  nome = ''
+  if sucesso:
+    nome = 'global'
+  else:
+    nome = 'parcial'
+
+  caminho = f'{caminho_resultado}/resultado_{nome}_dict_{time.strftime("%d_%m_%Y_%H_%M", time.localtime())}.joblib'
+  if os.path.isfile(caminho):
+      print("Atenção! Há um dicionário com o mesmo nome!")
+      print("Salvando com o nome _aux")
+      caminho = caminho.replace("_dict", "_dict_aux")
+  joblib.dump(resultado, caminho)
+  print(f"Dicionário com o resultado {nome} salvo em {caminho}")
 
 # Função auxiliar para extrair a variável sensível (feature)
 def extrair_feature(label_dataset):
@@ -270,12 +287,17 @@ def gerar_planilha(dados, caminho_resultado):
     nome_arquivo = f'{caminho_resultado}/resultado_global_{time.strftime("%d_%m_%Y_%H_%M", time.localtime())}.xlsx'
 
     try:
+        if os.path.isfile(nome_arquivo):
+            print("Atenção! Há uma planilha com o mesmo nome!")
+            print("Salvando com o nome _aux")
+            nome_arquivo = nome_arquivo.replace("_global", "_global_aux")
+
         with pd.ExcelWriter(nome_arquivo, engine='openpyxl') as writer:
             df_resultados_completos.to_excel(writer, sheet_name='resultados_completos', index=False)
             df_extended_fairness.to_excel(writer, sheet_name='extended_fairness_results', index=False)
             df_fairness_results.to_excel(writer, sheet_name='fairness_results', index=False)
             df_parametros_completos.to_excel(writer, sheet_name='parametros_completos', index=False)
 
-        print(f"\n✅ Arquivo Excel '{nome_arquivo}' criado com sucesso, contendo {len(df_resultados_completos)} linhas de dados.")
+        print(f"Arquivo Excel com {len(df_resultados_completos)} linhas de dados salvo em {nome_arquivo}")
     except Exception as e:
-        print(f"❌ Erro ao salvar o arquivo Excel: {e}")
+        print(f"Erro ao salvar o arquivo Excel: {e}")
