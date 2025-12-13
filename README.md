@@ -27,14 +27,25 @@ O arquivo requirements presente na raiz do projeto tem os dois requirements menc
 É necessário instalar algumas bibliotecas:
 
 pip install aif360
+
 pip install 'aif360[AdversarialDebiasing]'
+
 pip install 'aif360[inFairness]'
+
 pip install fairlearn
+
 pip install --upgrade inFairness
+
 pip install BlackBoxAuditing
+
 pip install imblearn
+
 pip install seaborn
+
 pip install shap
+
 pip install xgboost
+
 pip install openpyxl
+
 pip install ucimlrepo
