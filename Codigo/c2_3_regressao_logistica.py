@@ -12,7 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
-def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None):
+def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None, nome_modelo='regressao_logistica'):
   desempenho = {}
 
   pipeline = Pipeline(steps=[
@@ -36,7 +36,7 @@ def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de
   if(X_justica == False):
     X_test_justica = X_test
 
-  desempenho = desempenho_modelo(nome_base_de_dados, best_model, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=printar, matriz_de_confusao=matriz_de_confusao)
+  desempenho = desempenho_modelo(nome_base_de_dados, best_model, nome_modelo, X_train, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=printar, matriz_de_confusao=matriz_de_confusao)
   desempenho['melhores_parametros'] = grid_search.best_params_
 
   # Importância das features

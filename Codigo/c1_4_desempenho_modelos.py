@@ -9,7 +9,8 @@ from sklearn.metrics import (
     f1_score
 )
 
-def desempenho_modelo(nome_base_de_dados, model, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False):
+# nome_modelo e X_train são usados na intepretabilidade
+def desempenho_modelo(nome_base_de_dados, model, nome_modelo, X_train, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False):
     coluna_sensivel = dados_sensiveis['coluna_sensivel']
     grupo_privilegiado = dados_sensiveis['grupo_privilegiado']
     grupo_desprivilegiado = dados_sensiveis['grupo_desprivilegiado']
@@ -257,6 +258,17 @@ def desempenho_modelo(nome_base_de_dados, model, X_test, X_test_justica, y_pred,
     desempenho_geral['equalized_odds'] = {
         'equalized_odds_difference': equalized_odds_difference,
         'equalized_odds_ratio': equalized_odds_ratio,
+    }
+
+    # Interpretabilidade
+    desempenho_geral['interpretabilidade'] = {
+        'pipeline': model, # model é na realidade do tipo grid_search.best_estimator_
+        'nome_modelo': nome_modelo,
+        'nome_dataset': nome_base_de_dados,
+        'cenario': 'várias variáveis',
+        'X_train': X_train,
+        'X_test': X_test,
+        'y_test': y_test
     }
 
     desempenho = {}

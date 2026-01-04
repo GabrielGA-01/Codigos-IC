@@ -107,7 +107,7 @@ def reject_option_classification(funcao_modelo, parametros_in, printar=False):
 
     # Resultados
     y_pred_reject_option_classification = dataset_transf.labels.ravel()
-    desempenho_reject_option_classification = desempenho_modelo(parametros['nome_base_de_dados'], model, X_test, X_test, y_pred_reject_option_classification, y_test, dados_sensiveis, printar=printar_resultado, matriz_de_confusao=matriz_de_confusao_resultado)
+    desempenho_reject_option_classification = desempenho_modelo(parametros['nome_base_de_dados'], model, parametros['nome_modelo'], X_train, X_test, X_test, y_pred_reject_option_classification, y_test, dados_sensiveis, printar=printar_resultado, matriz_de_confusao=matriz_de_confusao_resultado)
 
     return(desempenho_base, desempenho_reject_option_classification)
 

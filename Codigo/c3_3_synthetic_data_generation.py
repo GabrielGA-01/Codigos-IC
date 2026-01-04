@@ -10,7 +10,7 @@ def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, p
     dados_sensiveis = parametros['dados_sensiveis']
 
     # Ajustando o nome
-    nome_banco_teste = parametros['nome_base_de_dados'] + " || DADOS DE TESTE || SYNTHETIC DATA GENERATION"
+    nome_banco_treino = parametros['nome_base_de_dados'] + " || DADOS DE TREINO || SYNTHETIC DATA GENERATION"
 
     coluna_sensivel = dados_sensiveis['coluna_sensivel']
 
@@ -23,7 +23,7 @@ def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, p
     razao_target_homens = contagem_grupos.loc[(1, 1)] / contagem_grupos.loc[(1, 0)]
 
     if(printar):
-        print(f"\n----- {nome_banco_teste} || DISTRIBUIÇÃO DOS DADOS DE TESTE RECEBIDOS\n")
+        print(f"\n----- {nome_banco_treino} || DISTRIBUIÇÃO DOS DADOS DE TREINO RECEBIDOS\n")
         print(contagem_grupos)
         print("Razão de target == 1 / target == 0: ")
         print(f"Mulheres: {razao_target_mulheres}")
@@ -68,20 +68,20 @@ def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, p
 
     # Juntar o grupo de homens (intocado) com o novo grupo de mulheres (modificado)
     df_synthetic_data_generation = pd.concat([df_homens, df_mulheres_resampled], ignore_index=True)
-    nome_banco_sintetico = parametros['nome_base_de_dados'] + " || DADOS DE TESTE COM SDG || SYNTHETIC DATA GENERATION"
+    nome_banco_sintetico = parametros['nome_base_de_dados'] + " || DADOS DE TREINO COM SDG || SYNTHETIC DATA GENERATION"
 
     contagem_grupos = df_synthetic_data_generation.groupby([coluna_sensivel, 'target']).size()
     razao_target_mulheres = contagem_grupos.loc[(0, 1)] / contagem_grupos.loc[(0, 0)]
     razao_target_homens = contagem_grupos.loc[(1, 1)] / contagem_grupos.loc[(1, 0)]
 
     if(printar):
-        print(f"Tamanho total do DataFrame de teste: {dados_treino.shape[0]} linhas")
-        print(f"\n----- {nome_banco_sintetico} || DISTRIBUIÇÃO FINAL DOS DADOS DE TESTE\n")
+        print(f"Tamanho total do DataFrame de treino: {dados_treino.shape[0]} linhas")
+        print(f"\n----- {nome_banco_sintetico} || DISTRIBUIÇÃO FINAL DOS DADOS DE TREINO\n")
         print(df_synthetic_data_generation.groupby([coluna_sensivel, 'target']).size())
         print("Razão de target = 1 / target = 0: ")
         print(f"Mulheres: {razao_target_mulheres}")
         print(f"Homens: {razao_target_homens}")
-        print(f"Tamanho total do novo DataFrame de teste: {df_synthetic_data_generation.shape[0]} linhas")
+        print(f"Tamanho total do novo DataFrame de treino: {df_synthetic_data_generation.shape[0]} linhas")
 
     # Balanceando os dados novos
     base_de_dados_final = df_synthetic_data_generation

@@ -74,7 +74,7 @@ def calibration(funcao_modelo, parametros_in, printar=False):
 
     # Resultados
     y_pred_calibration = (calibrated_probs_test >= 0.5).astype(int)
-    desempenho_calibration = desempenho_modelo(parametros['nome_base_de_dados'], model, X_test, X_test, y_pred_calibration, y_test, dados_sensiveis, printar=printar_resultado, matriz_de_confusao=matriz_de_confusao_resultado)
+    desempenho_calibration = desempenho_modelo(parametros['nome_base_de_dados'], model, parametros['nome_modelo'], X_train, X_test, X_test, y_pred_calibration, y_test, dados_sensiveis, printar=printar_resultado, matriz_de_confusao=matriz_de_confusao_resultado)
 
     return(desempenho_base, desempenho_calibration)
 
