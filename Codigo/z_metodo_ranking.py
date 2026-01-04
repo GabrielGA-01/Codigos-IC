@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Nome do arquivo Excel original
-nome_arquivo_excel = "resultado_global_08_12_2025_18.xlsx"
+nome_arquivo_excel = "Resultado_global_12_12_2025_22_42.xlsx"
 
 # Nomes das planilhas (sheets) a serem lidas
 sheet_resultados_completos = "resultados_completos"
@@ -35,10 +35,10 @@ try:
     print("Arquivos carregados com sucesso.")
 
 except FileNotFoundError:
-    print(f"❌ Erro: O arquivo '{nome_arquivo_excel}' não foi encontrado.")
+    print(f"Erro: O arquivo '{nome_arquivo_excel}' não foi encontrado.")
     exit()
 except Exception as e:
-    print(f"❌ Erro ao ler ou processar o arquivo Excel: {e}")
+    print(f"Erro ao ler ou processar o arquivo Excel: {e}")
     exit()
 
 
@@ -103,8 +103,8 @@ results_df_output = results_df_final.rename(columns=score_column_map)
 results_df_output = results_df_output.sort_values(by='Pontuação Final', ascending=False)
 
 
-print("\n--- ✅ Médias Calculadas ---\n")
+print("\nMédias Calculadas\n")
 print(results_df_output[['tecnica', 'Acurácia', 'AUC', 'F1', 'TPR', 'TNR', 'FPR', 'FNR', 'Predictive Parity Ratio']].to_markdown(index=False, numalign="center", stralign="left"))
 
-print("\n--- ✅ Pontuação Individual (1=Pior, 8=Melhor) e Pontuação Final ---\n")
+print("\nPontuação Individual e Final\n")
 print(results_df_output.drop(columns=['Acurácia', 'AUC', 'F1', 'TPR', 'TNR', 'FPR', 'FNR', 'Predictive Parity Ratio']).to_markdown(index=False, numalign="center", stralign="left"))
