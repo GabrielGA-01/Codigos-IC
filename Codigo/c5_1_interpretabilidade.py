@@ -2,9 +2,9 @@
 import pandas as pd
 import os
 import time
-from c5_1_shap import importancia_shap
-from c5_2_permutation_importance import importancia_permutacao
-from c5_3_lime import importancia_lime
+from c5_2_shap import importancia_shap
+from c5_3_permutation_importance import importancia_permutacao
+from c5_4_lime import importancia_lime
 
 def gerar_interpretabilidade(dados, caminho_resultado):
     """
