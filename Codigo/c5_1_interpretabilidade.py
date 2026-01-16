@@ -115,5 +115,88 @@ def gerar_interpretabilidade(dados, caminho_resultado):
 
         print(f"Arquivo de interpretabilidade salvo em {nome_arquivo}")
         
+
     except Exception as e:
         print(f"Erro ao salvar o arquivo Excel de interpretabilidade: {e}")
+
+def gerar_interpretabilidade_especifica(dados, nome_dataset, nome_modelo, nome_tecnica):
+    """
+    Gera as métricas de interpretabilidade (SHAP, Permutation, LIME) para UM CASO ESPECÍFICO.
+    Retorna um dicionário com os resultados, sem salvar em arquivo.
+    """
+    resultados_interp = {
+        'shap': None,
+        'permutation': None,
+        'lime': None
+    }
+
+    print(f"Iniciando cálculo de interpretabilidade específico para: {nome_dataset} | {nome_modelo} | {nome_tecnica}")
+
+    try:
+        if nome_dataset not in dados:
+            raise ValueError(f"Dataset '{nome_dataset}' não encontrado.")
+        if nome_modelo not in dados[nome_dataset]:
+             raise ValueError(f"Modelo '{nome_modelo}' não encontrado.")
+        if nome_tecnica not in dados[nome_dataset][nome_modelo]:
+             raise ValueError(f"Técnica '{nome_tecnica}' não encontrada.")
+
+        dados_tecnica = dados[nome_dataset][nome_modelo][nome_tecnica]
+
+        if 'geral' in dados_tecnica and 'interpretabilidade' in dados_tecnica['geral']:
+            info_interp = dados_tecnica['geral']['interpretabilidade']
+            
+            pipeline = info_interp['pipeline']
+            nome_modelo_real = info_interp['nome_modelo']
+            cenario = info_interp['cenario']
+            X_train = info_interp['X_train']
+            X_test = info_interp['X_test']
+            y_test = info_interp['y_test']
+
+            nome_identificacao = f"{nome_modelo} ({nome_tecnica})"
+
+            # 1. SHAP
+            try:
+                start_shap = time.time()
+                res_shap = importancia_shap(pipeline, nome_modelo_real, nome_dataset, cenario, X_test)
+                end_shap = time.time()
+                print(f"  > SHAP concluído em {end_shap - start_shap:.2f}s")
+                
+                # Adicionar identificador
+                for item in res_shap:
+                    item['tecnica'] = nome_tecnica
+                resultados_interp['shap'] = res_shap
+            except Exception as e:
+                print(f"Erro ao calcular SHAP para {nome_identificacao}: {e}")
+
+            # 2. Permutation Importance
+            try:
+                start_perm = time.time()
+                res_perm = importancia_permutacao(pipeline, nome_modelo_real, nome_dataset, cenario, X_test, y_test)
+                end_perm = time.time()
+                print(f"  > Permutation Importance concluída em {end_perm - start_perm:.2f}s")
+
+                for item in res_perm:
+                    item['tecnica'] = nome_tecnica
+                resultados_interp['permutation'] = res_perm
+            except Exception as e:
+                print(f"Erro ao calcular Permutation Importance para {nome_identificacao}: {e}")
+
+            # 3. LIME
+            try:
+                start_lime = time.time()
+                res_lime = importancia_lime(pipeline, nome_modelo_real, nome_dataset, cenario, X_train, X_test)
+                end_lime = time.time()
+                print(f"  > LIME concluído em {end_lime - start_lime:.2f}s")
+
+                for item in res_lime:
+                    item['tecnica'] = nome_tecnica
+                resultados_interp['lime'] = res_lime
+            except Exception as e:
+                print(f"Erro ao calcular LIME para {nome_identificacao}: {e}")
+        else:
+            print(f"Dados de interpretabilidade ('pipeline', 'X_train', etc.) não encontrados para este caso.")
+
+    except Exception as e:
+        print(f"Erro geral na interpretabilidade específica: {e}")
+
+    return resultados_interp
