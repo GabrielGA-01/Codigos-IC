@@ -1,10 +1,19 @@
+"""
+Este arquivo implementa a técnica de pré-processamento Disparate Impact Removal (AIF360).
+A técnica modifica os valores das features para remover a correlação com o atributo sensível.
+Inclui uma classe personalizada para permitir o uso separado de fit() e transform().
+"""
+
 import numpy as np
 import pandas as pd
 from aif360.datasets import BinaryLabelDataset
 from aif360.algorithms import Transformer
 
-# Adaptação para a técnica contendo o método fit() e transform()
 class DisparateImpactRemover_Mod(Transformer):
+    """
+    Versão modificada do DisparateImpactRemover para garantir que o reparador treinado no 
+    conjunto de treino possa ser aplicado corretamente ao conjunto de teste.
+    """
     
     def __init__(self, repair_level=1.0, sensitive_attribute=''):
         super(DisparateImpactRemover_Mod, self).__init__(repair_level=repair_level)
@@ -20,9 +29,8 @@ class DisparateImpactRemover_Mod(Transformer):
         self.index_ = None         # índice do atributo sensível
         self.fitted_ = False       # flag para saber se o fit foi feito
 
-    # Criação do metodo fit
     def fit(self, dataset):
-        """Aprende o reparador a partir do dataset de treino."""
+        """Aprende o reparador (Repairer) a partir do dataset fornecido."""
         if not self.sensitive_attribute:
             self.sensitive_attribute = dataset.protected_attribute_names[0]
 
@@ -34,9 +42,8 @@ class DisparateImpactRemover_Mod(Transformer):
         self.fitted_ = True
         return self
 
-    # Criação do método transform
     def transform(self, dataset):
-        """Aplica o reparo usando o reparador já aprendido no fit()."""
+        """Aplica a transformação de reparo utilizando os coeficientes aprendidos no fit()."""
         if not self.fitted_:
             raise RuntimeError("Você precisa chamar fit() antes de transform().")
 
@@ -53,12 +60,22 @@ class DisparateImpactRemover_Mod(Transformer):
 
         return repaired
 
-    # --- Mantém compatibilidade com o padrão original ---
     def fit_transform(self, dataset):
-        """Treina o reparador e aplica o reparo no mesmo dataset."""
+        """Treina e transforma o dataset simultaneamente."""
         return self.fit(dataset).transform(dataset)
     
 def disparate_impact_removal(funcao_modelo, parametros_in, printar=False):
+    """
+    Aplica o reparo de Disparate Impact em treino e teste e treina o modelo nos dados resultantes.
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo.
+    - parametros_in: Dicionário com dados e configurações.
+    - printar: Booleano para exibir amostras dos dados antes e depois do reparo.
+    
+    Retorna:
+    - desempenho: Dicionário com os resultados da avaliação.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

@@ -1,3 +1,9 @@
+"""
+Este arquivo implementa um método de ranking simples para comparar as técnicas.
+Ele atribui pontuações para diversas métricas de desempenho e justiça (1 a N) para,
+ao final, identificar os melhores métodos em média.
+"""
+
 import pandas as pd
 import numpy as np
 

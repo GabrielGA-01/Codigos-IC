@@ -1,3 +1,8 @@
+"""
+Este arquivo implementa o cálculo da importância das variáveis via Permutação.
+A técnica consiste em embaralhar os valores de cada coluna e observar a queda no desempenho do modelo.
+"""
+
 from sklearn.inspection import permutation_importance
 import pandas as pd 
 

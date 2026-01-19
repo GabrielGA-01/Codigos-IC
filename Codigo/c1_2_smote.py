@@ -1,10 +1,7 @@
-# Iguala a quantidade de rótulos um e rótulos zero entre dois grupos
-# base_de_dados - O dataframe Pandas
-# colunas_discretas - Uma lista contendo os nomes das colunas
-# variavel_sensivel - O nome da coluna que contém esses dois grupos
-# classe_alterada - O valor da classe que será igualado as ocorrências de target 1 e target 0
-# classe_inalterada - O valor da outra classe
-# printar - Determina se háverá prints do processo ou não
+"""
+Este arquivo contém uma função para balancear um subgrupo específico de uma variável sensível
+utilizando a técnica SMOTENC.
+"""
 
 import pandas as pd
 from sklearn import config_context
@@ -13,6 +10,20 @@ import c0_1_configuracoes as c0_1_configuracoes
 seed = c0_1_configuracoes.seed
 
 def enviesamento_smotenc_rotulo_binario(base_de_dados, colunas_discretas, variavel_sensivel, classe_alterada, classe_intacta, printar=False):
+  """
+  Aplica SMOTE-NC para balancear o target (0/1) dentro de um grupo específico da variável sensível.
+  
+  Parâmetros:
+  - base_de_dados: DataFrame Pandas contendo o dataset completo.
+  - colunas_discretas: Lista de strings com os nomes das colunas categóricas.
+  - variavel_sensivel: String com o nome da coluna que define os grupos (ex: 'sensitive_sexo').
+  - classe_alterada: Valor do grupo na variável sensivel que sofrerá o oversampling (ex: 0 para mulheres).
+  - classe_intacta: Valor do grupo que não será modificado (ex: 1 para homens).
+  - printar: Booleano para exibir estatísticas antes e depois do processo.
+  
+  Retorna:
+  - df_enviesado_smotenc: DataFrame Pandas contendo o grupo intacto e o grupo alterado (agora balanceado).
+  """
   df_alterado = base_de_dados[base_de_dados[variavel_sensivel] == classe_alterada].copy()
   df_mantido = base_de_dados[base_de_dados[variavel_sensivel] == classe_intacta].copy()
 

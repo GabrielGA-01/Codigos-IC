@@ -1,5 +1,8 @@
-# Função usada para criar um gráfico shap no formato de um violino
-# É preciso verificar, mas talvez funcione somente para o random forest e xgboost
+"""
+Este arquivo contém a função para gerar um gráfico de violino baseado nos valores SHAP,
+permitindo visualizar o impacto das features para diferentes grupos sensíveis (ex: Masculino vs Feminino).
+Atualmente está em desuso e precisa ser atualizada.
+"""
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +11,14 @@ import seaborn as sns
 import shap
 
 def fazer_grafico_shap(nome_base_de_dados, trained_model_pipeline, X_test):
+    """
+    Calcula valores SHAP e plota um gráfico de violino comparativo por sexo.
+    
+    Parâmetros:
+    - nome_base_de_dados: String com o nome do dataset.
+    - trained_model_pipeline: Objeto Pipeline treinado contendo o classificador.
+    - X_test: DataFrame contendo os dados de teste para os quais os valores SHAP serão calculados.
+    """
     print(f"\n----- {nome_base_de_dados} || GRÁFICO SHAP -----\n")
     model = trained_model_pipeline.named_steps['classifier']
 

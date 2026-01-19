@@ -1,8 +1,8 @@
-# Esse arquivo contém os pré-processadores necessários para cada um dos datasets.
-# Além disso, contém a função responsável por separar os dados em treino e teste,
-# aplicar automaticamente o pré-processador correto e retornar os dados tratados.
-# Treina-se o pré-processador nos dados de treino e aplica nos dados de treino e 
-# teste.
+"""
+Este arquivo contém a lógica para identificação automática de um dos quatro datasets do projeto
+e a aplicação do respectivo pipeline de pré-processamento (StandardScaler, OneHotEncoder, etc.).
+Também realiza a divisão dos dados em conjuntos de treino e teste.
+"""
 
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
@@ -13,6 +13,18 @@ from sklearn.model_selection import train_test_split
 from c0_1_configuracoes import seed
 
 def aplicar_pre_processador(conjunto_dados):
+    """
+    Identifica o dataset pelas colunas, treina o pré-processador no treino e transforma treino e teste.
+    
+    Parâmetros:
+    - conjunto_dados: DataFrame Pandas contendo o dataset bruto (com a coluna 'target').
+    
+    Retorna:
+    - X_train_processed_df: DataFrame com as features de treino transformadas.
+    - X_test_processed_df: DataFrame com as features de teste transformadas.
+    - y_train: Série Pandas com os rótulos de treino.
+    - y_test: Série Pandas com os rótulos de teste.
+    """
     set_config(transform_output="pandas")
 
     # PRÉ-PROCESSADORES 

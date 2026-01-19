@@ -1,3 +1,9 @@
+"""
+Este arquivo implementa a técnica de pós-processamento Reject Option Classification (AIF360).
+Esta técnica altera previsões feitas em uma área de incerteza (próximo ao threshold) 
+favorecendo o grupo desprivilegiado para melhorar a justiça do modelo.
+"""
+
 from aif360.datasets import BinaryLabelDataset
 from aif360.algorithms.postprocessing import RejectOptionClassification
 from sklearn.model_selection import train_test_split
@@ -6,6 +12,18 @@ from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 def reject_option_classification(funcao_modelo, parametros_in, printar=False):
+    """
+    Treina o modelo e aplica o Reject Option Classification para ajustar previsões incertas.
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo base.
+    - parametros_in: Dicionário com dados e configurações.
+    - printar: Booleano para exibir os resultados do modelo pós-processado.
+    
+    Retorna:
+    - desempenho_base: Resultados do modelo original.
+    - desempenho_reject_option_classification: Resultados do modelo após aplicação da técnica.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

@@ -1,3 +1,9 @@
+"""
+Este arquivo implementa uma técnica customizada de balanceamento sintético para justiça.
+Ele utiliza o SMOTENC para equilibrar a proporção de rótulos favoráveis e desfavoráveis 
+dentro de cada grupo de uma variável sensível.
+"""
+
 import pandas as pd
 from imblearn.over_sampling import SMOTENC
 from sklearn import config_context 
@@ -6,6 +12,18 @@ from c0_1_configuracoes import seed
 from c1_1_balancear import balancear_proporcao_rotulo_binario as balancear
 
 def synthetic_data_generation(funcao_modelo, parametros_in, colunas_discretas, printar=False):
+    """
+    Gera dados sintéticos para equilibrar as taxas de aprovação entre grupos e treina o modelo.
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo.
+    - parametros_in: Dicionário com dados e configurações.
+    - colunas_discretas: Lista com os nomes das colunas categóricas para o SMOTE-NC.
+    - printar: Booleano para exibir estatísticas das razões de aprovação.
+    
+    Retorna:
+    - desempenho: Dicionário com os resultados da avaliação.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

@@ -1,9 +1,29 @@
+"""
+Este arquivo implementa o cálculo da importância das variáveis utilizando LIME.
+Ele gera explicações locais para uma amostra de instâncias e as agrega para obter uma visão global.
+"""
+
 import lime
 import lime.lime_tabular
 import numpy as np
 import pandas as pd
 
 def importancia_lime(pipeline, nome_modelo, nome_dataset, cenario, X_train, X_test, n_samples=100):
+    """
+    Calcula a importância LIME agregada para as features do modelo.
+    
+    Parâmetros:
+    - pipeline: Pipeline treinado.
+    - nome_modelo: Nome do modelo.
+    - nome_dataset: Nome do dataset.
+    - cenario: Cenário de teste.
+    - X_train: Dados de treino processados (necessário para o explainer LIME).
+    - X_test: Dados de teste.
+    - n_samples: Número de amostras locais a serem explicadas e agregadas.
+    
+    Retorna:
+    - Lista de dicionários com a importância média absoluta de cada variável.
+    """
     preprocessor = pipeline.named_steps['preprocessor']
     classifier = pipeline.named_steps['classifier']
 

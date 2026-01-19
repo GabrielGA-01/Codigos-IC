@@ -1,3 +1,9 @@
+"""
+Este arquivo implementa uma técnica de calibração de probabilidades por grupo.
+Utiliza a Isotonic Regression para calibrar as probabilidades de saída do modelo separadamente
+para cada grupo sensível, buscando que as probabilidades reflitam fielmente as frequências reais.
+"""
+
 from sklearn.isotonic import IsotonicRegression
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -6,6 +12,18 @@ from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 def calibration(funcao_modelo, parametros_in, printar=False):
+    """
+    Treina o modelo e aplica calibração isotônica separada por grupo (ex: Homens e Mulheres).
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo base.
+    - parametros_in: Dicionário com dados e configurações.
+    - printar: Booleano para exibir os resultados do modelo calibrado.
+    
+    Retorna:
+    - desempenho_base: Resultados do modelo original.
+    - desempenho_calibration: Resultados do modelo após calibração por grupo.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

@@ -1,3 +1,8 @@
+"""
+Este arquivo coordena a execução de múltiplas técnicas de interpretabilidade global.
+Ele percorre os resultados dos modelos treinados e chama as funções para calcular 
+SHAP, Permutation Importance e LIME.
+"""
 
 import pandas as pd
 import os

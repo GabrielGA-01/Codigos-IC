@@ -1,9 +1,27 @@
+"""
+Este arquivo implementa o cálculo da importância das variáveis utilizando SHAP (SHapley Additive exPlanations).
+Ele seleciona automaticamente o melhor Explainer (Tree, Linear ou Kernel) dependendo do modelo fornecido.
+"""
+
 import shap
 import numpy as np
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
 
 def importancia_shap(pipeline, nome_modelo, nome_dataset, cenario, X_test):
+    """
+    Calcula os valores SHAP médios para cada feature do modelo.
+    
+    Parâmetros:
+    - pipeline: Pipeline treinado contendo preprocessor e classifier.
+    - nome_modelo: String com o nome do modelo para decidir o Explainer.
+    - nome_dataset: String com o nome do dataset.
+    - cenario: String descrevendo o cenário de teste.
+    - X_test: DataFrame de teste (original, será transformado internamente).
+    
+    Retorna:
+    - Lista de dicionários contendo a importância (média do valor absoluto) de cada variável.
+    """
     # Preparação dos dados
     preprocessor = pipeline.named_steps['preprocessor']
     classifier = pipeline.named_steps['classifier']

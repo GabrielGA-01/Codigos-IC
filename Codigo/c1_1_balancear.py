@@ -1,23 +1,36 @@
-# Função utilizada para garantir que em um determinado conjunto de dados
-# tenha a mesma proporção de intâncias com o rótulo sendo zero e com o rótulo sendo um
-# conjunto_dados - Dataframe Pandas
-# conjunto_nome - Um nome para se referir a esse conjunto. Impacta somente no print
-# rotulo - O nome da coluna de rótulo
-# printar - Determina se háverá prints do processo ou não
+"""
+Este arquivo contém funções para balancear a proporção de classes em um rótulo binário,
+garantindo que o número de instâncias de cada classe seja igual (50/50).
+"""
 
-def balancear_proporcao_rotulo_binario(conjunto_dados, cojunto_nome, rotulo, printar=False):
+import pandas as pd
+
+def balancear_proporcao_rotulo_binario(conjunto_dados, conjunto_nome, rotulo, printar=False):
+  """
+  Realiza o balanceamento de um dataset binário através de undersampling da classe majoritária.
+  
+  Parâmetros:
+  - conjunto_dados: DataFrame Pandas contendo os dados a serem balanceados.
+  - conjunto_nome: String representando o nome do conjunto (ex: 'Treino') para exibição em logs.
+  - rotulo: String com o nome da coluna alvo (target).
+  - printar: Booleano para definir se as estatísticas do processo devem ser exibidas.
+  
+  Retorna:
+  - df_balanceado: DataFrame Pandas com as classes balanceadas.
+  - estatisticas: Dicionário contendo informações sobre a proporção inicial, final e quantidade de linhas removidas.
+  """
   estatisticas = {}
 
   # Proporção do rótulo
   proporcao = conjunto_dados[rotulo].value_counts(normalize=True)
   estatisticas["proporcao_inicial"] = proporcao
   if(printar):
-    print(f"\n----- {cojunto_nome} || PROPORÇÃO INICIAL DAS CLASSES DO RÓTULO -----\n")
+    print(f"\n----- {conjunto_nome} || PROPORÇÃO INICIAL DAS CLASSES DO RÓTULO -----\n")
     print(proporcao)
 
   # Verificando de cada classe do rótulo
   if(printar):
-    print(f"\n----- {cojunto_nome} || TOTAL INICIAL DE CADA CLASSE DO RÓTULO -----\n")
+    print(f"\n----- {conjunto_nome} || TOTAL INICIAL DE CADA CLASSE DO RÓTULO -----\n")
 
   quantidade_de_cada_classe = {}
   classes = conjunto_dados[rotulo].unique()
@@ -61,12 +74,12 @@ def balancear_proporcao_rotulo_binario(conjunto_dados, cojunto_nome, rotulo, pri
   proporcao = df_balanceado[rotulo].value_counts(normalize=True)
   estatisticas["proporcao_final"] = proporcao
   if(printar):
-    print(f"\n----- {cojunto_nome} BALANCEADO || PROPORÇÃO FINAL DAS CLASSES DO RÓTULO -----\n")
+    print(f"\n----- {conjunto_nome} BALANCEADO || PROPORÇÃO FINAL DAS CLASSES DO RÓTULO -----\n")
     print(proporcao)
 
   # Verificando de cada classe do rótulo
   if(printar):
-    print(f"\n----- {cojunto_nome} BALANCEADO || TOTAL FINAL DE CADA CLASSE DO RÓTULO -----\n")
+    print(f"\n----- {conjunto_nome} BALANCEADO || TOTAL FINAL DE CADA CLASSE DO RÓTULO -----\n")
 
   quantidade_de_cada_classe = {}
   classes = df_balanceado[rotulo].unique()

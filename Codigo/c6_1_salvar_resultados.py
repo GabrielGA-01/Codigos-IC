@@ -1,3 +1,9 @@
+"""
+Este arquivo contém as funções para persistência dos resultados do projeto.
+Inclui o salvamento do dicionário de métricas em formato joblib e a geração de 
+planilhas Excel detalhadas com métricas de desempenho e justiça.
+"""
+
 import joblib
 import pandas as pd
 import os
@@ -5,19 +11,27 @@ import time
 import re
 
 def salvar_dicionario(resultado, caminho_resultado, sucesso):
-  nome = ''
-  if sucesso:
-    nome = 'global'
-  else:
-    nome = 'parcial'
+    """
+    Salva o dicionário de resultados em um arquivo .joblib.
+    
+    Parâmetros:
+    - resultado: O dicionário contendo todas as métricas acumuladas.
+    - caminho_resultado: Diretório onde o arquivo será salvo.
+    - sucesso: Booleano para definir o prefixo do nome (global ou parcial).
+    """
+    nome = ''
+    if sucesso:
+        nome = 'global'
+    else:
+        nome = 'parcial'
 
-  caminho = f'{caminho_resultado}/resultado_{nome}_dict_{time.strftime("%d_%m_%Y_%H_%M", time.localtime())}.joblib'
-  if os.path.isfile(caminho):
-      print("Atenção! Há um dicionário com o mesmo nome!")
-      print("Salvando com o nome _aux")
-      caminho = caminho.replace("_dict", "_dict_aux")
-  joblib.dump(resultado, caminho)
-  print(f"Dicionário com o resultado {nome} salvo em {caminho}")
+    caminho = f'{caminho_resultado}/resultado_{nome}_dict_{time.strftime("%d_%m_%Y_%H_%M", time.localtime())}.joblib'
+    if os.path.isfile(caminho):
+        print("Atenção! Há um dicionário com o mesmo nome!")
+        print("Salvando com o nome _aux")
+        caminho = caminho.replace("_dict", "_dict_aux")
+    joblib.dump(resultado, caminho)
+    print(f"Dicionário com o resultado {nome} salvo em {caminho}")
 
 # Função auxiliar para extrair a variável sensível (feature)
 def extrair_feature(label_dataset):

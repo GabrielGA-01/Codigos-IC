@@ -1,8 +1,24 @@
+"""
+Este arquivo implementa a técnica de pré-processamento Instance Reweighing (AIF360).
+A técnica atribui pesos diferentes às instâncias de treino para mitigar o viés sem alterar os dados.
+"""
+
 from aif360.datasets import BinaryLabelDataset
 from aif360.algorithms.preprocessing.reweighing import Reweighing
 import pandas as pd
 
 def instance_reweighing(funcao_modelo, parametros_in, printar=False):
+    """
+    Calcula pesos de reponderação para mitigar viés e treina o modelo fornecido usando esses pesos.
+    
+    Parâmetros:
+    - funcao_modelo: Função que executa o treinamento do modelo (ex: random_forest_GSCV).
+    - parametros_in: Dicionário contendo todos os dados e parâmetros necessários para o treinamento.
+    - printar: Booleano para exibir os pesos calculados por classe/grupo.
+    
+    Retorna:
+    - desempenho: Dicionário com os resultados da avaliação do modelo treinado com os pesos.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

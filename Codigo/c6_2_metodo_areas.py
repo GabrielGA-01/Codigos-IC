@@ -1,3 +1,10 @@
+"""
+Este arquivo implementa o cálculo da Métrica de Performance Multi-Critério (MCPM).
+A métrica utiliza o cálculo da área de um triângulo formado por F1-Score, 
+proximidade de Equalized Odds e proximidade de Demographic Parity.
+Permite comparar técnicas e modelos de forma agregada.
+"""
+
 import pandas as pd
 import numpy as np
 import os

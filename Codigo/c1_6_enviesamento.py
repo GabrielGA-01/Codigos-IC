@@ -1,3 +1,9 @@
+"""
+Este arquivo automatiza o processo de criação de variações enviesadas dos datasets.
+Ele carrega os datasets processados, aplica pré-processamento e gera versões onde 
+um dos grupos de uma variável sensível é enviesado usando SMOTENC.
+"""
+
 from c0_1_configuracoes import(
     colunas_discretas1,
     colunas_discretas2,
@@ -14,6 +20,12 @@ from c1_3_preprocessor_automatizado import aplicar_pre_processador
 import pandas as pd
 
 def enviesar():
+    """
+    Coordena o carregamento, processamento e enviesamento de todos os datasets do projeto.
+    
+    Retorna:
+    - datasets: Um dicionário aninhado contendo DataFrames de treino/teste e metadados para as versões original e enviesada de cada dataset.
+    """
     # Enviesando os datasets
     datasets = {
         'df1':{

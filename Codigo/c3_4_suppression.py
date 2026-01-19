@@ -1,4 +1,21 @@
+"""
+Este arquivo implementa a técnica de Supressão.
+Consiste em remover a variável sensível do conjunto de dados antes do treinamento,
+evitando que o modelo aprenda correlações diretas com atributos protegidos.
+"""
+
 def suppression(funcao_modelo, parametros_in, printar=False):
+    """
+    Remove a coluna sensível e treina o modelo nos dados restantes.
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo.
+    - parametros_in: Dicionário com dados e configurações.
+    - printar: Booleano para exibir confirmação da remoção.
+    
+    Retorna:
+    - desempenho: Dicionário com os resultados da avaliação.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 

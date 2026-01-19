@@ -1,6 +1,8 @@
-# Esse aquivo tem o propósito de conter variáveis globais
-# para serem utilizadas por todos os notebooks e facilitar
-# assim, mudanças futuras
+"""
+Este arquivo contém variáveis globais utilizadas por todos os notebooks e scripts do projeto.
+O objetivo é centralizar configurações como caminhos de arquivos, sementes aleatórias,
+parâmetros de modelos e definições de dados sensíveis para facilitar mudanças futuras.
+"""
 
 from sklearn.compose import ColumnTransformer
 
@@ -18,25 +20,28 @@ preprocessor_passthrough = ColumnTransformer(
 )
 
 # DADOS SENSÍVEIS
+# dicionários que definem as colunas sensíveis, grupos privilegiados/desprivilegiados e rótulos de classe.
 
-# Atualmente todos os quatro datasets têm rótulo favorável como 0 e desfavorável como 1.
-# Futuramente isso pode mudar e pode ser necessário criar variações dos dicionários abaixo.
+# dados_sensiveis_sexo: Configurações para análise de viés baseada em sexo.
+dados_sensiveis_sexo = {
+    'coluna_sensivel': 'sensitive_sexo',
+    'grupo_privilegiado': 1,       # Homens
+    'grupo_desprivilegiado': 0,    # Mulheres
+    'rotulo_favoravel': 0, 
+    'rotulo_desfavoravel': 1
+}
 
-dados_sensiveis_sexo = {}
-dados_sensiveis_sexo['coluna_sensivel'] = 'sensitive_sexo'
-dados_sensiveis_sexo['grupo_privilegiado'] =  1     # Homens
-dados_sensiveis_sexo['grupo_desprivilegiado'] = 0   # Mulheres
-dados_sensiveis_sexo['rotulo_favoravel'] = 0 
-dados_sensiveis_sexo['rotulo_desfavoravel'] = 1
-
-dados_sensiveis_age = {}
-dados_sensiveis_age['coluna_sensivel'] = 'sensitive_age'
-dados_sensiveis_age['grupo_privilegiado'] =  1      # Adultos
-dados_sensiveis_age['grupo_desprivilegiado'] = 0    # Jovens
-dados_sensiveis_age['rotulo_favoravel'] = 0
-dados_sensiveis_age['rotulo_desfavoravel'] = 1
+# dados_sensiveis_age: Configurações para análise de viés baseada em idade.
+dados_sensiveis_age = {
+    'coluna_sensivel': 'sensitive_age',
+    'grupo_privilegiado': 1,        # Adultos
+    'grupo_desprivilegiado': 0,     # Jovens
+    'rotulo_favoravel': 0,
+    'rotulo_desfavoravel': 1
+}
 
 # PARÂMETROS GRID SEARCH
+# Dicionários contendo as grades de hiperparâmetros para busca exaustiva (Grid Search) de diferentes modelos.
 
 param_grid_regressao_logistica_completo = {
   'classifier__random_state': [seed],
@@ -71,6 +76,8 @@ param_grid_xgboost_completo = {
   'classifier__subsample': [0.6, 0.8, 1.0],
   'classifier__colsample_bytree': [0.6, 0.8, 1.0]
 }
+
+# Grades básicas (com menos variações ou valores fixos) para testes rápidos ou modelos base.
 
 param_grid_regressao_logistica_basico = {
     'classifier__random_state': [seed],

@@ -1,3 +1,8 @@
+"""
+Este arquivo contém a função central para avaliação de desempenho dos modelos.
+Calcula métricas de desempenho do modelo e métricas de justiça para o conjunto total e para grupos sensíveis.
+"""
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -9,8 +14,26 @@ from sklearn.metrics import (
     f1_score
 )
 
-# nome_modelo e X_train são usados na intepretabilidade
 def desempenho_modelo(nome_base_de_dados, model, nome_modelo, X_train, X_test, X_test_justica, y_pred, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False):
+    """
+    Avalia o modelo em termos de eficácia preditiva e justiça (fairness).
+    
+    Parâmetros:
+    - nome_base_de_dados: String com o nome do dataset sendo avaliado.
+    - model: O objeto do modelo treinado (ou pipeline).
+    - nome_modelo: String identificando o modelo (ex: 'random_forest').
+    - X_train: DataFrame de treino (usado em algumas análises de interpretabilidade).
+    - X_test: DataFrame de teste (já processado pela téncnica).
+    - X_test_justica: DataFrame de teste original (usado para identificar grupos sensíveis caso essa coluna tenha sido removida pela téncnica).
+    - y_pred: Array com as previsões binárias do modelo.
+    - y_test: Array com os rótulos reais de teste.
+    - dados_sensiveis: Dicionário com as configurações da variável sensível (coluna, grupos, etc.).
+    - printar: Booleano para exibir os resultados detalhados no console.
+    - matriz_de_confusao: Booleano para exibir o gráfico da matriz de confusão.
+    
+    Retorna:
+    - desempenho: Dicionário contendo métricas 'geral', 'privilegiado' e 'desprivilegiado' e suas subcategorias.
+    """
     coluna_sensivel = dados_sensiveis['coluna_sensivel']
     grupo_privilegiado = dados_sensiveis['grupo_privilegiado']
     grupo_desprivilegiado = dados_sensiveis['grupo_desprivilegiado']

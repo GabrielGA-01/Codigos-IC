@@ -1,4 +1,7 @@
-# Treina um modelo regressão logística usando pipeline, grid search e cross validation
+"""
+Este arquivo contém a implementação do treinamento do modelo de Regressão Logística utilizando 
+Pipeline, GridSearchCV e StratifiedKFold para otimização de hiperparâmetros.
+"""
 
 import numpy as np
 import pandas as pd
@@ -13,6 +16,30 @@ from c0_1_configuracoes import seed
 from c1_4_desempenho_modelos import desempenho_modelo
 
 def regressao_logistica_GSCV(param_grid, preprocessor, cv_n_splits, nome_base_de_dados, X_train, X_test, y_train, y_test, dados_sensiveis, printar=False, matriz_de_confusao=False, grafico_shap=False, pesos=False, pesos_modelo=None, X_justica=False, X_test_justica=None, nome_modelo='regressao_logistica'):
+  """
+  Executa a busca de hiperparâmetros e treina a Regressão Logística, avaliando seu desempenho e os coeficientes das features.
+  
+  Parâmetros:
+  - param_grid: Dicionário com a grade de parâmetros para o GridSearchCV.
+  - preprocessor: Objeto ColumnTransformer para pré-processamento dos dados.
+  - cv_n_splits: Número de divisões para a validação cruzada.
+  - nome_base_de_dados: String com o nome do dataset.
+  - X_train, X_test: DataFrames de treino e teste.
+  - y_train, y_test: Séries com os rótulos de treino e teste.
+  - dados_sensiveis: Dicionário com config da variável sensível para métricas de justiça.
+  - printar: Booleano para exibir resultados no console.
+  - matriz_de_confusao: Booleano para gerar gráfico da matriz de confusão.
+  - grafico_shap: Booleano para gerar gráfico (não implementado nativamente para LogReg neste script).
+  - pesos: Booleano indicando se deve usar pesos de amostra (sample_weight).
+  - pesos_modelo: Séries com os pesos para cada instância de treino.
+  - X_justica: Booleano para usar um dataset de teste diferente para justiça.
+  - X_test_justica: Dataset de teste original para métricas de justiça.
+  - nome_modelo: Identificador string do modelo.
+  
+  Retorna:
+  - best_model: O melhor modelo (pipeline) encontrado pelo GridSearch.
+  - desempenho: Dicionário com as métricas de avaliação e parâmetros otimizados.
+  """
   desempenho = {}
 
   pipeline = Pipeline(steps=[

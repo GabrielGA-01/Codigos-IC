@@ -1,3 +1,8 @@
+"""
+Este arquivo implementa a técnica de pós-processamento Threshold Optimization (Fairlearn).
+Ela ajusta os limiares de decisão de um classificador já treinado para otimizar a métrica de justiça Demographic Parity.
+"""
+
 from fairlearn.postprocessing import ThresholdOptimizer
 from sklearn.model_selection import train_test_split
 
@@ -6,6 +11,18 @@ from c1_4_desempenho_modelos import desempenho_modelo
 
 
 def threshold_optimization(funcao_modelo, parametros_in, printar=False):
+    """
+    Treina um modelo base e depois aplica a otimização de limiar usando um conjunto de validação.
+    
+    Parâmetros:
+    - funcao_modelo: Função de treinamento do modelo base.
+    - parametros_in: Dicionário com dados e configurações.
+    - printar: Booleano para exibir os resultados do modelo otimizado.
+    
+    Retorna:
+    - desempenho_base: Resultados do modelo original.
+    - desempenho_threshold_optimization: Resultados do modelo após ajuste de limiares.
+    """
     parametros = parametros_in.copy()
     dados_sensiveis = parametros['dados_sensiveis']
 
