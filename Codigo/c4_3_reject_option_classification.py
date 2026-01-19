@@ -156,5 +156,6 @@ if __name__ == "__main__":
     parametros['y_test'] = y_test
     parametros['nome_base_de_dados'] = "DATASET"
     parametros['dados_sensiveis'] = dados_sensiveis_age
+    parametros['nome_modelo'] = 'xgboost'
 
     desempenho_orig, desempenho = reject_option_classification(xgboost_GSCV, parametros, printar=True)

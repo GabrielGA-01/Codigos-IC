@@ -85,7 +85,7 @@ if __name__ == "__main__":
     from c2_2_xgboost import xgboost_GSCV
     from c1_3_preprocessor_automatizado import aplicar_pre_processador
 
-    df = pd.read_csv(f"Datasets/Processados/Dataset2.csv", sep=',')
+    df = pd.read_csv(f"Datasets/Processados/Dataset3.csv", sep=',')
 
     X_train, X_test, y_train, y_test = aplicar_pre_processador(df)
 
@@ -101,5 +101,6 @@ if __name__ == "__main__":
     parametros['y_test'] = y_test
     parametros['nome_base_de_dados'] = "DATASET"
     parametros['dados_sensiveis'] = dados_sensiveis_age
+    parametros['nome_modelo'] = 'xgboost'
 
     desempenho_orig, desempenho = threshold_optimization(xgboost_GSCV, parametros, printar=True)

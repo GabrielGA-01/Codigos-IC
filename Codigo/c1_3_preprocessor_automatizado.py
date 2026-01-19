@@ -102,7 +102,6 @@ def aplicar_pre_processador(conjunto_dados):
     set_colunas_dados = set(conjunto_dados.columns)
 
     preprocessor = None
-    num_dataset_identificado = 0
 
     # Verifica se as colunas dos pré-processadores estão presentes no conjunto de dados
     if set(colunas1).issubset(set_colunas_dados):
