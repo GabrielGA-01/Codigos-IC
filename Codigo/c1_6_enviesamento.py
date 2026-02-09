@@ -73,7 +73,7 @@ def enviesar():
     }
 
     enviesamentos = {
-        'smotenc_simples': {
+        'smote_simples': {
             'funcao': enviesamento_smotenc,
             'nome_banco': 'SMOTE SIMPLES'
         }
