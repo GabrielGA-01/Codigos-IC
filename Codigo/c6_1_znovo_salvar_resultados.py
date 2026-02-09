@@ -143,7 +143,7 @@ def gerar_planilha_nova(dados, caminho_resultado):
                     'dataset': dataset_base, 
                     'smote': smote_valor, 
                     'modelo': modelo,
-                    'tecnica': 'Nenhuma' if tecnica_nome == 'sem_tecnica' else tecnica_nome,
+                    'tecnica': 'nenhuma' if tecnica_nome == 'sem_tecnica' else tecnica_nome,
                     'cenario': CENARIO_VALOR 
                 }
                 
