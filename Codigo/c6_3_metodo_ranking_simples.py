@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 # Nome do arquivo Excel original
-nome_arquivo_excel = "./Resultados/resultado_global_03_01_2026_19_50.xlsx"
+nome_arquivo_excel = "./Resultados/Mesclagem_Resultados_Final.xlsx"
 
 # Nomes das planilhas (sheets) a serem lidas
 sheet_resultados_completos = "resultados_completos"

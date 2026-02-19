@@ -205,7 +205,7 @@ def comparar_desempenho_modelos(nome_arquivo_excel):
 if __name__ == "__main__":
     caminho_resultados = "./Resultados"
     # Tenta definir um padrão inicial, mas ajusta automaticamente
-    nome_arquivo_excel = f"{caminho_resultados}/resultado_global_03_01_2026_19_50.xlsx"
+    nome_arquivo_excel = f"{caminho_resultados}/Mesclagem_Resultados_Final.xlsx"
 
     if not os.path.exists(nome_arquivo_excel):
         list_of_files = glob.glob(f'{caminho_resultados}/resultado_global_*.xlsx')
