@@ -82,7 +82,7 @@ def calcular_desempenho_tecnicas(nome_arquivo_excel):
     DPR_P = df_analise['DPD_Prox']
 
     # Área Total
-    df_analise['MCPM'] = (F1 * EOR_P * SIN_120) + (EOR_P * DPR_P * SIN_120) + (DPR_P * F1 * SIN_120)
+    df_analise['MCPM'] = (F1 * EOR_P * SIN_120)/2 + (EOR_P * DPR_P * SIN_120)/2 + (DPR_P * F1 * SIN_120)/2
 
     # --- EXIBIÇÃO DOS RESULTADOS ---
     datasets_unicos = df_analise['dataset'].unique()
@@ -173,7 +173,7 @@ def comparar_desempenho_modelos(nome_arquivo_excel):
     DPR_P = df_analise['DPD_Prox']
 
     # Área Total
-    df_analise['MCPM'] = (F1 * EOR_P * SIN_120) + (EOR_P * DPR_P * SIN_120) + (DPR_P * F1 * SIN_120)
+    df_analise['MCPM'] = (F1 * EOR_P * SIN_120)/2 + (EOR_P * DPR_P * SIN_120)/2 + (DPR_P * F1 * SIN_120)/2
 
     # --- EXIBIÇÃO DOS RESULTADOS ---
     datasets_unicos = df_analise['dataset'].unique()
