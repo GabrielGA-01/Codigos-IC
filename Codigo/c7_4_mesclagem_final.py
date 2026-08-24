@@ -1,7 +1,7 @@
 import pandas as pd
 
 arquivos = {
-    'Gabriel': 'resultado_global_19_02_2026_11_47.xlsx',
+    'Gabriel': 'resultado_global_23_08_2026_23_57.xlsx',
     'Vinicius': 'resultado_vinicius.xlsx',
     'Julia': 'resultado_julia.xlsx'
 }
