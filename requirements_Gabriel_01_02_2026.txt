@@ -127,8 +127,8 @@ pyparsing==3.3.2
 python-dateutil==2.9.0.post0
 python-json-logger==4.0.0
 pytz==2025.2
-pywin32==311
-pywinpty==3.0.3
+#pywin32==311 # Only for Windows
+#pywinpty==3.0.3 # Only for Windows
 PyYAML==6.0.3
 pyzmq==27.1.0
 qgrid==1.3.1
