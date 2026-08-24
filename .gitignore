@@ -1,4 +1,5 @@
 venv/
+.env/
 Codigo/__pycache__/
 Codigo/Resultados/
 Vinicius/
